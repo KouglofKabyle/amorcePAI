@@ -1,0 +1,39 @@
+<md-toolbar class="titre">{{ $ctrl.titre }}</md-toolbar>
+
+<!-- Afficher la liste des patients pour chaque Infirmier -->
+<md-content class="md-whiteframe-2dp">
+
+	<md-toolbar class="titre" layout-align="center center">Gestion des infirmiers</md-toolbar>
+
+	<md-content class="md-padding">
+	    <md-tabs md-selected="selectedIndex" md-border-bottom md-autoselect>
+	      	<md-tab ng-repeat="inf in $ctrl.data.objectInfirmiers"
+	            ng-disabled="tab.disabled"
+	            label="{{inf.nom | uppercase}} {{inf.prenom}}">
+	        	<md-content class="md-padding","demo-tab","tab-content" layout="row">
+	          		<md-list ng-repeat="patientX in inf.patients" layout="row">
+						<patient data="patientX" layout-padding></patient>
+						<md-divider ng-if="!$last"></md-divider>
+	          		</md-list-item>
+		        </md-content>
+	      	</md-tab>
+	    </md-tabs>
+	</md-content>
+	</br>
+
+<!-- Ajouter un patient au tableau -->
+	<md-toolbar class="titre" layout-align="center center">Ajouter un patient</md-toolbar>
+	<formulaire-new-patient data="$ctrl.data"></formulaire-new-patient>
+
+<!-- Liste des patients restants de patient restant -->
+
+
+
+</md-content>
+
+
+
+
+
+
+

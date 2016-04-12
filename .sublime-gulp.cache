@@ -1,0 +1,1 @@
+{"C:\\Program Files (x86)\\EasyPHP-DevServer-14.1VC11\\data\\localweb\\projects\\LTW2\\webDCISS\\amorcePAI\\gulpfile.js":{"sha1":"a9cd1be952ade74ed898a61823e0b92835383fb5","tasks":{"lint":{"name":"lint","dependencies":""},"watch":{"name":"watch","dependencies":"lint"},"webpack":{"name":"webpack","dependencies":""},"default":{"name":"default","dependencies":"webpack watch"}}}}

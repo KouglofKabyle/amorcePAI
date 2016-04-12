@@ -1,0 +1,9 @@
+<md-list-item class="md-3-line" ng-click="null">
+	<img ng-src="../../{{ $ctrl.data.photo }}" class="md-avatar" alt="{{$ctrl.data.nom}}">
+	<div class="md-list-item-text">
+		  <h3>{{$ctrl.data.nom | uppercase}} {{$ctrl.data.prenom}}</h3>
+		  <h4>{{$ctrl.data.id}}</h4>
+		  <p>Infirmier</p>
+	</div>
+	<md-divider md-inset ng-if="!$last"></md-divider>
+</md-list-item>

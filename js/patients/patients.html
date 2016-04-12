@@ -1,0 +1,15 @@
+<table flex layout="column">
+	<tr>
+		<td>{{$ctrl.data.nom | uppercase}} {{$ctrl.data.prenom}}</td>
+	</tr>
+	<tr>
+		<td>{{ $ctrl.data.id }}</td>
+	</tr>
+	<tr>
+		<td ng-repeat="ad in $ctrl.data.adresse">
+			{{ ad.rue }}</br>
+			{{ ad.ville }}</br>
+			{{ ad.codePostal }}</br>
+		</td>
+	</tr>
+</table>
