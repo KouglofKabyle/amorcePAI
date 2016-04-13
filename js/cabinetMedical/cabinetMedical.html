@@ -34,14 +34,16 @@
 	    </md-tabs>
 	</md-content>
 	</br>
-<md-toolbar >
+
+
+<!-- Ajouter un patient au tableau -->
+	<md-toolbar >
       <div class="md-toolbar-tools">
-       
         <h2>
           <span>Ajouter un patient </span>
         </h2>
         <span flex></span>
-       
+
         <md-button ng-click= "$ctrl.showFormulaire()" class="md-icon-button" aria-label="More">
           <md-icon md-svg-icon="../../images/arrow_down.svg"></md-icon>
         </md-button>
@@ -49,14 +51,30 @@
       </div>
     </md-toolbar>
 
-
-<!-- Ajouter un patient au tableau -->
-	
-
 	<formulaire-new-patient data="$ctrl.data" ng-show="$ctrl.formulaire == true"></formulaire-new-patient>
 
-<!-- Liste des patients restants de patient restant -->
 
+
+<!-- Liste des patients restants de patient restant -->
+	<md-toolbar >
+      <div class="md-toolbar-tools">
+        <h2>
+          <span>Patients non affectés</span>
+        </h2>
+        <span flex></span>
+
+        <!-- <md-button ng-click= "$ctrl.showPatientsRestants()" class="md-icon-button" aria-label="More">
+          <md-icon md-svg-icon="../../images/arrow_down.svg"></md-icon>
+        </md-button> -->
+
+      </div>
+    </md-toolbar>
+
+    <md-content>
+    	<md-content class="md-whiteframe-2dp" ng-repeat="patientX in $ctrl.objectPatients">
+    		<patient data="patientX" ng-if="{ patientX.infirmier == null }"></patient>
+    	</md-content>
+    </md-content>
 
 
 </md-content>

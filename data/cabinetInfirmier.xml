@@ -23,7 +23,7 @@
 			<photo>images/maggie111.gif</photo>
 		</infirmier>
 	</infirmiers>
-	<patients><patient><nom>mister</nom><prenom>trololo</prenom><numero>123456789012345</numero><sexe></sexe><naissance></naissance><visite date="2014-12-08"/><adresse><etage></etage><numero></numero><rue></rue><ville></ville><codePostal></codePostal></adresse></patient><patient><nom>mister</nom><prenom>trololo 2</prenom><numero>123456789012346</numero><sexe></sexe><naissance></naissance><visite date="2014-12-08" intervenant=""/><adresse><etage></etage><numero></numero><rue></rue><ville></ville><codePostal></codePostal></adresse></patient><patient><nom>mister</nom><prenom>trololo 3 !</prenom><numero>123456789012347</numero><sexe></sexe><naissance></naissance><visite date="2014-12-08" intervenant=""/><adresse><etage></etage><numero></numero><rue></rue><ville></ville><codePostal></codePostal></adresse></patient><patient><nom>JEAN</nom><prenom>Veeeux</prenom><numero>123456789012348</numero><sexe></sexe><naissance></naissance><visite date="2014-12-08" intervenant=""/><adresse><etage></etage><numero></numero><rue></rue><ville></ville><codePostal></codePostal></adresse></patient><patient><nom>Mister</nom><prenom>EL Trololo</prenom><numero>123456789012349</numero><sexe></sexe><naissance></naissance><visite date="2014-12-08" intervenant=""/><adresse><etage></etage><numero></numero><rue></rue><ville></ville><codePostal></codePostal></adresse></patient><patient><nom>Mister</nom><prenom>EL EL TRololOoo</prenom><numero>123456789012350</numero><sexe></sexe><naissance></naissance><visite date="2014-12-08" intervenant="003"/><adresse><etage></etage><numero></numero><rue></rue><ville></ville><codePostal></codePostal></adresse></patient></patients>
+	<patients>
 		<patient>
 			<nom>Aire</nom>
 			<prenom>Axel</prenom>
@@ -149,4 +149,5 @@
 			</visite>
 
 		</patient>
+	<patient><nom>Chuck</nom><prenom>Testa</prenom><numero>123456789012367</numero><sexe></sexe><naissance></naissance><visite date="2014-12-08" intervenant="002"/><adresse><etage></etage><numero></numero><rue></rue><ville></ville><codePostal></codePostal></adresse></patient><patient><nom>Chuck</nom><prenom>Testa</prenom><numero>123456789012353</numero><sexe>M</sexe><naissance></naissance><visite date="2014-12-08" intervenant="002"/><adresse><etage></etage><numero></numero><rue></rue><ville></ville><codePostal></codePostal></adresse></patient><patient><nom>Captain</nom><prenom>America</prenom><numero>123456789012398</numero><sexe></sexe><naissance></naissance><visite date="2014-12-08"/><adresse><etage></etage><numero></numero><rue></rue><ville></ville><codePostal></codePostal></adresse></patient></patients>
 </cabinet>

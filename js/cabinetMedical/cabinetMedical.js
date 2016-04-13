@@ -32,6 +32,18 @@ module.exports = function(moduleAngular) {
             console.log(ctrl.formulaire);
          }
 
+        /*ctrl.patientsRestants = false;
+
+        ctrl.patientsRestants= function(){
+            if (ctrl.patientsRestants==true){
+                ctrl.patientsRestants = false;
+            }
+            else {
+                ctrl.patientsRestants = true;
+            }
+            console.log(ctrl.patientsRestants);
+         }*/
+
     };
 
 
