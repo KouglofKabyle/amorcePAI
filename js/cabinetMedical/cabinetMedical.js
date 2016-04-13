@@ -1,4 +1,4 @@
-// Template HTML
+    // Template HTML
 var template = require( "./cabinetMedical.html" );
 require( "./cabinetMedical.css" );
 
@@ -18,6 +18,19 @@ module.exports = function(moduleAngular) {
             ctrl.data = cabinetJS;
             console.log(ctrl.data);
         });
+
+        // Affichage formulaire -----------------
+        ctrl.formulaire = false;
+         
+         ctrl.showFormulaire= function(){
+            if (ctrl.formulaire==true){
+                ctrl.formulaire = false;
+            }
+            else {
+                ctrl.formulaire = true;
+            }
+            console.log(ctrl.formulaire);
+         }
 
     };
 

@@ -99,7 +99,6 @@ var proxyNF = function($http){
             // success callback
             function(response){
                 console.log("Salami ! Nouveau patient ajouté");
-                $scope.apply();
                 },
             // error callback
             function(response){

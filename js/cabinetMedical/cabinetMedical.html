@@ -3,7 +3,21 @@
 <!-- Afficher la liste des patients pour chaque Infirmier -->
 <md-content class="md-whiteframe-2dp">
 
-	<md-toolbar class="titre" layout-align="center center">Gestion des infirmiers</md-toolbar>
+
+<md-toolbar >
+      <div class="md-toolbar-tools">
+       
+        <h2>
+          <span>Gestion des infimiers </span>
+        </h2>
+        <span flex></span>
+       
+        <md-button ng-click= "$ctrl.showFormulaire()" class="md-icon-button" aria-label="More">
+          <md-icon md-svg-icon="../../images/arrow_down.svg"></md-icon>
+        </md-button>
+        
+      </div>
+    </md-toolbar>
 
 	<md-content class="md-padding">
 	    <md-tabs md-selected="selectedIndex" md-border-bottom md-autoselect>
@@ -20,10 +34,26 @@
 	    </md-tabs>
 	</md-content>
 	</br>
+<md-toolbar >
+      <div class="md-toolbar-tools">
+       
+        <h2>
+          <span>Ajouter un patient </span>
+        </h2>
+        <span flex></span>
+       
+        <md-button ng-click= "$ctrl.showFormulaire()" class="md-icon-button" aria-label="More">
+          <md-icon md-svg-icon="../../images/arrow_down.svg"></md-icon>
+        </md-button>
+
+      </div>
+    </md-toolbar>
+
 
 <!-- Ajouter un patient au tableau -->
-	<md-toolbar class="titre" layout-align="center center">Ajouter un patient</md-toolbar>
-	<formulaire-new-patient data="$ctrl.data"></formulaire-new-patient>
+	
+
+	<formulaire-new-patient data="$ctrl.data" ng-show="$ctrl.formulaire == true"></formulaire-new-patient>
 
 <!-- Liste des patients restants de patient restant -->
 
