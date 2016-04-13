@@ -32,9 +32,9 @@ module.exports = function(moduleAngular) {
             console.log(ctrl.formulaire);
          }
 
-        /*ctrl.patientsRestants = false;
+        ctrl.patientsRestants = false;
 
-        ctrl.patientsRestants= function(){
+        ctrl.showPatientsRestants= function(){
             if (ctrl.patientsRestants==true){
                 ctrl.patientsRestants = false;
             }
@@ -42,7 +42,7 @@ module.exports = function(moduleAngular) {
                 ctrl.patientsRestants = true;
             }
             console.log(ctrl.patientsRestants);
-         }*/
+         }
 
     };
 
