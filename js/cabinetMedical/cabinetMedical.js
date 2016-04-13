@@ -21,7 +21,6 @@ module.exports = function(moduleAngular) {
 
         // Affichage formulaire -----------------
         ctrl.formulaire = false;
-         
          ctrl.showFormulaire= function(){
             if (ctrl.formulaire==true){
                 ctrl.formulaire = false;
@@ -32,8 +31,8 @@ module.exports = function(moduleAngular) {
             console.log(ctrl.formulaire);
          }
 
+        // Affichage patients restants
         ctrl.patientsRestants = false;
-
         ctrl.showPatientsRestants= function(){
             if (ctrl.patientsRestants==true){
                 ctrl.patientsRestants = false;
