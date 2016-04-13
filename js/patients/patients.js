@@ -47,9 +47,15 @@ module.exports = function(moduleAngular) {
 
     // boite dialogue 
      ctrl.showAlert = function(ev) {
-            // Appending dialog to document.body to cover sidenav in docs app
-            // Modal dialogs should fully cover application
-            // to prevent interaction outside of dialog
+     	   var existePatient = false;
+
+           ctrl.data.objectPatients.forEach(function(patient){
+           		console.log(patient.id);
+                if(patient.id == ctrl.nouveauPatient.patientNumber) {
+                    existePatient = true;
+                }
+           });
+           if (!existePatient){
             $mdDialog.show(
               $mdDialog.alert()
                 .parent(angular.element(document.querySelector('#popupContainer')))
@@ -61,7 +67,21 @@ module.exports = function(moduleAngular) {
                 .targetEvent(ev)
             );
             console.log("salut");
+            }else{
+                $mdDialog.show(
+                $mdDialog.alert()
+                .parent(angular.element(document.querySelector('#popupContainer')))
+                .clickOutsideToClose(true)
+                .title('Alerte')
+                .textContent("Le patient \" " + ctrl.nouveauPatient.patientForname +' '+ctrl.nouveauPatient.patientName+' \" est déjà enregistré(e)')
+                .ariaLabel('Alert Dialog Demo')
+                .ok('Retour!')
+                .targetEvent(ev)
+            );
           };
+    };
+
+      //-------------------------    
     };
 
     // Construire une balise <patient>
