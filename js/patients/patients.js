@@ -38,12 +38,16 @@ module.exports = function(moduleAngular) {
 
         this.submitPatient = function(){
             console.log(ctrl.nouveauPatient);
-            proxyNF.ajouterNouveauPatient(ctrl.nouveauPatient);
+            proxyNF.ajouterNouveauPatient(ctrl.nouveauPatient).then(
+                function(){
+                    console.log("patient.js => test d'affectation");
+                    ctrl.onValidation();
+                });
             if(ctrl.check == true && ctrl.affecterInfirmier.infirmier!=="") {
                 ctrl.affecterInfirmier.patient = ctrl.nouveauPatient.patientNumber;
                 proxyNF.affecterPatient(ctrl.affecterInfirmier).then(
                 function(){
-                    console.log("test d'affectation");
+                    console.log("patient.js => test d'affectation");
                     console.log(ctrl.onValidation);
                     ctrl.onValidation();
                 });
@@ -51,41 +55,41 @@ module.exports = function(moduleAngular) {
 
         };
 
-    // boite dialogue
-     ctrl.showAlert = function(ev) {
-     	   var existePatient = false;
+        // boite dialogue
+        ctrl.showAlert = function(ev) {
+         	   var existePatient = false;
 
-           ctrl.data.objectPatients.forEach(function(patient){
-           		console.log(patient.id);
-                if(patient.id == ctrl.nouveauPatient.patientNumber) {
-                    existePatient = true;
-                }
-           });
-           if (!existePatient){
-            $mdDialog.show(
-              $mdDialog.alert()
-                .parent(angular.element(document.querySelector('#popupContainer')))
-                .clickOutsideToClose(true)
-                .title('Information')
-                .textContent(ctrl.nouveauPatient.patientForname +' '+ctrl.nouveauPatient.patientName+ ' a été ajouté avec succès aux patients')
-                .ariaLabel('Alert Dialog Demo')
-                .ok('Retour!')
-                .targetEvent(ev)
-            );
-            console.log("salut");
-            }else{
+               ctrl.data.objectPatients.forEach(function(patient){
+               		console.log(patient.id);
+                    if(patient.id == ctrl.nouveauPatient.patientNumber) {
+                        existePatient = true;
+                    }
+               });
+               if (!existePatient){
                 $mdDialog.show(
-                $mdDialog.alert()
-                .parent(angular.element(document.querySelector('#popupContainer')))
-                .clickOutsideToClose(true)
-                .title('Alerte')
-                .textContent("Le patient \" " + ctrl.nouveauPatient.patientForname +' '+ctrl.nouveauPatient.patientName+' \" est déjà enregistré(e)')
-                .ariaLabel('Alert Dialog Demo')
-                .ok('Retour!')
-                .targetEvent(ev)
-            );
-          };
-    };
+                  $mdDialog.alert()
+                    .parent(angular.element(document.querySelector('#popupContainer')))
+                    .clickOutsideToClose(true)
+                    .title('Information')
+                    .textContent(ctrl.nouveauPatient.patientForname +' '+ctrl.nouveauPatient.patientName+ ' a été ajouté avec succès aux patients')
+                    .ariaLabel('Alert Dialog Demo')
+                    .ok('Retour!')
+                    .targetEvent(ev)
+                );
+                console.log("salut");
+                }else{
+                    $mdDialog.show(
+                    $mdDialog.alert()
+                    .parent(angular.element(document.querySelector('#popupContainer')))
+                    .clickOutsideToClose(true)
+                    .title('Alerte')
+                    .textContent("Le patient \" " + ctrl.nouveauPatient.patientForname +' '+ctrl.nouveauPatient.patientName+' \" est déjà enregistré(e)')
+                    .ariaLabel('Alert Dialog Demo')
+                    .ok('Retour!')
+                    .targetEvent(ev)
+                );
+              };
+        };
 
       //-------------------------
     };

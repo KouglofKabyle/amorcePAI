@@ -21,13 +21,51 @@
 
   <md-content class="md-padding">
       <md-tabs md-selected="selectedIndex" md-border-bottom md-autoselect>
-        	<md-tab ng-repeat="inf in $ctrl.data.objectInfirmiers"
+        	<md-tab
+              ng-repeat="inf in $ctrl.data.objectInfirmiers"
               ng-disabled="tab.disabled"
               label="{{inf.nom | uppercase}} {{inf.prenom}}">
-          	<md-content class="md-padding","demo-tab","tab-content" layout="row">
-            		<md-list ng-repeat="patientX in inf.patients" layout="row">
-  					<patient data="patientX" layout-padding></patient>
-  					<md-divider ng-if="!$last"></md-divider>
+          	<md-content
+              class="md-padding","demo-tab","tab-content"
+              layout="row">
+            		<md-list
+                  ng-repeat="patientX in inf.patients"
+                  layout="row">
+                      <md-content layout="column">
+                        <!-- affiche un patient -->
+              					<patient data="patientX" layout-padding></patient>
+                        <!-- actions sur un patient -->
+                        <div class="lock-size" layout="row" layout-align="center center">
+                          <md-fab-speed-dial
+                              md-direction="up"
+                              ng-class="md-scale"
+                              md-open="$ctrl.isOpen">
+                            <md-fab-trigger>
+                              <md-button aria-label="menu" class="md-fab md-warn">
+                                <md-icon md-svg-src="img/icons/menu.svg"></md-icon>
+                              </md-button>
+                            </md-fab-trigger>
+                            <md-fab-actions>
+                                <md-button
+                                  class="md-fab md-raised md-mini"
+                                  ng-click="$ctrl.modifierPatient(ev)"
+                                  type="submit">
+                                  Modifier</md-button>
+                                <md-button
+                                  class="md-fab md-raised md-mini"
+                                  ng-click="$ctrl.desaffecterPatient(patientX)"
+                                  type="submit">
+                                  Désaffecter</md-button>
+                                <md-button
+                                  class="md-fab md-raised md-mini"
+                                  ng-click="$ctrl.supprimerPatient(patientX)"
+                                  type="submit">
+                                  Supprimer</md-button>
+                            </md-fab-actions>
+                          </md-fab-speed-dial>
+                        </div>
+                        <md-divider ng-if="!$last"></md-divider>
+                      </md-content>
             		</md-list-item>
   	        </md-content>
         	</md-tab>
@@ -47,8 +85,8 @@
     </div>
   </md-toolbar>
   <md-content class="md-padding" layout-align="center">
-    <formulaire-new-patient 
-      data="$ctrl.data" 
+    <formulaire-new-patient
+      data="$ctrl.data"
       ng-show="$ctrl.formulaire == true"
       on-validation="$ctrl.updateInfirmiers()"></formulaire-new-patient>
   </md-content>

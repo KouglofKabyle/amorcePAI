@@ -98,11 +98,11 @@ var proxyNF = function($http){
         }).then(
             // success callback
             function(response){
-                console.log("Salami ! Nouveau patient ajouté");
+                console.log("proxy.js => Salami ! Nouveau patient ajouté");
                 },
             // error callback
             function(response){
-                console.log("Nouveau patient non ajouté");
+                console.log("proxy.js => Nouveau patient non ajouté");
                 }
             );
         };
@@ -115,11 +115,10 @@ var proxyNF = function($http){
 			data: affecterInfirmier
         }).then(
         	function(response) {
-        		console.log("Par la saucisse de Morteau ! Nouveau patient affecté");
-        		//$scope.apply();
+        		console.log("proxy.js => Par la saucisse de Morteau ! Nouveau patient affecté");
         	},
         	function(response) {
-        		console.log("Nouveau patient non affecté");
+        		console.log("proxy.js => Nouveau patient non affecté");
         	}
         );
     };

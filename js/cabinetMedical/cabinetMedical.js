@@ -7,7 +7,7 @@ module.exports = function(moduleAngular) {
 
     var proxyNF = require( "../proxy.js" )(moduleAngular);
 
-    var controller = function( proxyNF, $http ) {
+    var controller = function( proxyNF, $http, $mdDialog, $mdMedia ) {
 
         // Message d'accueil
         console.log("Hey !! This is controller, man...j'essaye de te récupérer les données..." );
@@ -19,12 +19,27 @@ module.exports = function(moduleAngular) {
             console.log(ctrl.data);
         });
 
+        // Mettre à jour les données
         this.updateInfirmiers = function() {
             proxyNF.getData(this.src).then( function(cabinetJS) {
             ctrl.data = cabinetJS;
-            console.log("cabinet chorizooooo");
+            console.log("CabinetMedical.js => mise à jour des données");
         });
         };
+
+        // Actions sur un patient existant
+        this.isOpen = false;
+        this.modifierPatient = function(ev){
+            var useFullScreen = ($mdMedia('sm') || $mdMedia('xs'));
+            $mdDialog.show({
+              template: require("../patients/formulaireNouveauPatient.html"),
+              parent: angular.element(document.body),
+              targetEvent: ev,
+              clickOutsideToClose:true,
+              fullscreen: useFullScreen
+            })
+          };
+
 
         // Affichage formulaire -----------------
         ctrl.formulaire = false;
