@@ -19,6 +19,13 @@ module.exports = function(moduleAngular) {
             console.log(ctrl.data);
         });
 
+        this.updateInfirmiers = function() {
+            proxyNF.getData(this.src).then( function(cabinetJS) {
+            ctrl.data = cabinetJS;
+            console.log("cabinet chorizooooo");
+        });
+        };
+
         // Affichage formulaire -----------------
         ctrl.formulaire = false;
          ctrl.showFormulaire= function(){

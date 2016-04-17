@@ -4,52 +4,55 @@
 <md-content class="md-whiteframe-2dp" ng-cloak>
 
 
-<md-toolbar >
-      <div class="md-toolbar-tools">
-       
-        <h2>
-          <span>Gestion des infimiers </span>
-        </h2>
-        <span flex></span>
-       
-        <md-button ng-click= "$ctrl.showFormulaire()" class="md-icon-button" aria-label="More">
-          <md-icon md-svg-icon="../../images/arrow_down.svg"></md-icon>
-        </md-button>
-        
-      </div>
-    </md-toolbar>
+  <md-toolbar >
+    <div class="md-toolbar-tools">
 
-	<md-content class="md-padding">
-	    <md-tabs md-selected="selectedIndex" md-border-bottom md-autoselect>
-	      	<md-tab ng-repeat="inf in $ctrl.data.objectInfirmiers"
-	            ng-disabled="tab.disabled"
-	            label="{{inf.nom | uppercase}} {{inf.prenom}}">
-	        	<md-content class="md-padding","demo-tab","tab-content" layout="row">
-	          		<md-list ng-repeat="patientX in inf.patients" layout="row">
-						<patient data="patientX" layout-padding></patient>
-						<md-divider ng-if="!$last"></md-divider>
-	          		</md-list-item>
-		        </md-content>
-	      	</md-tab>
-	    </md-tabs>
-	</md-content>
-	</br>
+      <h2>
+        <span>Gestion des infimiers </span>
+      </h2>
+      <span flex></span>
+
+      <md-button ng-click= "$ctrl.showFormulaire()" class="md-icon-button" aria-label="More">
+        <md-icon md-svg-icon="../../images/arrow_down.svg"></md-icon>
+      </md-button>
+
+    </div>
+  </md-toolbar>
+
+  <md-content class="md-padding">
+      <md-tabs md-selected="selectedIndex" md-border-bottom md-autoselect>
+        	<md-tab ng-repeat="inf in $ctrl.data.objectInfirmiers"
+              ng-disabled="tab.disabled"
+              label="{{inf.nom | uppercase}} {{inf.prenom}}">
+          	<md-content class="md-padding","demo-tab","tab-content" layout="row">
+            		<md-list ng-repeat="patientX in inf.patients" layout="row">
+  					<patient data="patientX" layout-padding></patient>
+  					<md-divider ng-if="!$last"></md-divider>
+            		</md-list-item>
+  	        </md-content>
+        	</md-tab>
+      </md-tabs>
+  </md-content>
+  </br>
 
 
 <!-- Ajouter un patient au tableau -->
-	<md-toolbar >
-      <div class="md-toolbar-tools">
-        <h2><span>Ajouter un patient </span></h2>
-        <span flex></span>
-        <md-button ng-click= "$ctrl.showFormulaire()" class="md-icon-button" aria-label="More">
-          	<md-icon md-svg-icon="../../images/arrow_down.svg"></md-icon>
-        </md-button>
-      </div>
-    </md-toolbar>
-
-	<formulaire-new-patient data="$ctrl.data" ng-show="$ctrl.formulaire == true"></formulaire-new-patient>
-
-	</br>
+  <md-toolbar >
+    <div class="md-toolbar-tools">
+      <h2><span>Ajouter un patient </span></h2>
+      <span flex></span>
+      <md-button ng-click= "$ctrl.showFormulaire()" class="md-icon-button" aria-label="More">
+        	<md-icon md-svg-icon="../../images/arrow_down.svg"></md-icon>
+      </md-button>
+    </div>
+  </md-toolbar>
+  <md-content class="md-padding" layout-align="center">
+    <formulaire-new-patient 
+      data="$ctrl.data" 
+      ng-show="$ctrl.formulaire == true"
+      on-validation="$ctrl.updateInfirmiers()"></formulaire-new-patient>
+  </md-content>
+  </br>
 
 
 <!-- Liste des patients restants de patient restant -->

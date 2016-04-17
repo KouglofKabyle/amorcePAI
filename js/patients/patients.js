@@ -41,11 +41,17 @@ module.exports = function(moduleAngular) {
             proxyNF.ajouterNouveauPatient(ctrl.nouveauPatient);
             if(ctrl.check == true && ctrl.affecterInfirmier.infirmier!=="") {
                 ctrl.affecterInfirmier.patient = ctrl.nouveauPatient.patientNumber;
-                proxyNF.affecterPatient(ctrl.affecterInfirmier);
+                proxyNF.affecterPatient(ctrl.affecterInfirmier).then(
+                function(){
+                    console.log("test d'affectation");
+                    console.log(ctrl.onValidation);
+                    ctrl.onValidation();
+                });
             }
+
         };
 
-    // boite dialogue 
+    // boite dialogue
      ctrl.showAlert = function(ev) {
      	   var existePatient = false;
 
@@ -81,7 +87,7 @@ module.exports = function(moduleAngular) {
           };
     };
 
-      //-------------------------    
+      //-------------------------
     };
 
     // Construire une balise <patient>
@@ -97,6 +103,7 @@ module.exports = function(moduleAngular) {
     moduleAngular.component( "formulaireNewPatient", {
         'template'    : formulaire,
         bindings    : {
+            onValidation: "&",
             data: "<"
         },
         'controller'    : ctrlPatients

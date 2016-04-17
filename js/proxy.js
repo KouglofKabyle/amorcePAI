@@ -90,7 +90,7 @@ var proxyNF = function($http){
 
 	// Ajoute dans le XML un nouveau patient
 	this.ajouterNouveauPatient = function(nouveauPatient){
-        $http({
+        return $http({
             method: 'POST',
             url: "/addPatient",
             data: nouveauPatient,
@@ -109,18 +109,16 @@ var proxyNF = function($http){
 
     // Affecte à un patient un id d'infirmier
     this.affecterPatient = function(affecterInfirmier) {
-		$http({
+		return $http({
 			method: 'POST',
 			url: "/affectation",
 			data: affecterInfirmier
         }).then(
         	function(response) {
-        		console.log(affecterInfirmier.infirmier);
         		console.log("Par la saucisse de Morteau ! Nouveau patient affecté");
         		//$scope.apply();
         	},
         	function(response) {
-        		console.log(affecterInfirmier.infirmier);
         		console.log("Nouveau patient non affecté");
         	}
         );
