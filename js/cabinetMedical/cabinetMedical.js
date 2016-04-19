@@ -70,6 +70,7 @@ module.exports = function(moduleAngular) {
 
     require("../infirmiers/infirmiers.js")(moduleAngular);
     require("../patients/patients.js")(moduleAngular);
+   // require("../patientMap/patientMap.js")(moduleAngular);
 
 
     // Construire une balise <cabinet-medical>

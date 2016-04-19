@@ -59812,7 +59812,7 @@
 	        this.modifierPatient = function(ev){
 	            var useFullScreen = ($mdMedia('sm') || $mdMedia('xs'));
 	            $mdDialog.show({
-	              template: __webpack_require__(25),
+	              template: __webpack_require__(19),
 	              parent: angular.element(document.body),
 	              targetEvent: ev,
 	              clickOutsideToClose:true,
@@ -59848,8 +59848,9 @@
 	    };
 
 
-	    __webpack_require__(19)(moduleAngular);
-	    __webpack_require__(23)(moduleAngular);
+	    __webpack_require__(20)(moduleAngular);
+	    __webpack_require__(24)(moduleAngular);
+	   // require("../patientMap/patientMap.js")(moduleAngular);
 
 
 	    // Construire une balise <cabinet-medical>
@@ -59867,7 +59868,7 @@
 /* 15 */
 /***/ function(module, exports) {
 
-	module.exports = "<!-- <md-toolbar class=\"titre\">{{ $ctrl.titre }}</md-toolbar> -->\r\n\r\n<!-- Afficher la liste des patients pour chaque Infirmier -->\r\n<md-content class=\"md-whiteframe-2dp\" ng-cloak>\r\n\r\n\r\n  <md-toolbar >\r\n    <div class=\"md-toolbar-tools\">\r\n\r\n      <h2>\r\n        <span>Gestion des infimiers </span>\r\n      </h2>\r\n      <span flex></span>\r\n\r\n      <md-button ng-click= \"$ctrl.showFormulaire()\" class=\"md-icon-button\" aria-label=\"More\">\r\n        <md-icon md-svg-icon=\"../../images/arrow_down.svg\"></md-icon>\r\n      </md-button>\r\n\r\n    </div>\r\n  </md-toolbar>\r\n\r\n  <md-content class=\"md-padding\">\r\n      <md-tabs md-selected=\"selectedIndex\" md-border-bottom md-autoselect>\r\n        \t<md-tab\r\n              ng-repeat=\"inf in $ctrl.data.objectInfirmiers\"\r\n              ng-disabled=\"tab.disabled\"\r\n              label=\"{{inf.nom | uppercase}} {{inf.prenom}}\">\r\n          \t<md-content\r\n              class=\"md-padding\",\"demo-tab\",\"tab-content\"\r\n              layout=\"row\">\r\n            \t\t<md-list\r\n                  ng-repeat=\"patientX in inf.patients\"\r\n                  layout=\"row\">\r\n                      <md-content layout=\"column\">\r\n                        <!-- affiche un patient -->\r\n              \t\t\t\t\t<patient data=\"patientX\" layout-padding></patient>\r\n                        <!-- actions sur un patient -->\r\n                        <div class=\"lock-size\" layout=\"row\" layout-align=\"center center\">\r\n                          <md-fab-speed-dial\r\n                              md-direction=\"up\"\r\n                              ng-class=\"md-scale\"\r\n                              md-open=\"$ctrl.isOpen\">\r\n                            <md-fab-trigger>\r\n                              <md-button aria-label=\"menu\" class=\"md-fab md-warn\">\r\n                                <md-icon md-svg-src=\"img/icons/menu.svg\"></md-icon>\r\n                              </md-button>\r\n                            </md-fab-trigger>\r\n                            <md-fab-actions>\r\n                                <md-button\r\n                                  class=\"md-fab md-raised md-mini\"\r\n                                  ng-click=\"$ctrl.modifierPatient(ev)\"\r\n                                  type=\"submit\">\r\n                                  Modifier</md-button>\r\n                                <md-button\r\n                                  class=\"md-fab md-raised md-mini\"\r\n                                  ng-click=\"$ctrl.desaffecterPatient(patientX)\"\r\n                                  type=\"submit\">\r\n                                  Désaffecter</md-button>\r\n                                <md-button\r\n                                  class=\"md-fab md-raised md-mini\"\r\n                                  ng-click=\"$ctrl.supprimerPatient(patientX)\"\r\n                                  type=\"submit\">\r\n                                  Supprimer</md-button>\r\n                            </md-fab-actions>\r\n                          </md-fab-speed-dial>\r\n                        </div>\r\n                        <md-divider ng-if=\"!$last\"></md-divider>\r\n                      </md-content>\r\n            \t\t</md-list-item>\r\n  \t        </md-content>\r\n        \t</md-tab>\r\n      </md-tabs>\r\n  </md-content>\r\n  </br>\r\n\r\n\r\n<!-- Ajouter un patient au tableau -->\r\n  <md-toolbar >\r\n    <div class=\"md-toolbar-tools\">\r\n      <h2><span>Ajouter un patient </span></h2>\r\n      <span flex></span>\r\n      <md-button ng-click= \"$ctrl.showFormulaire()\" class=\"md-icon-button\" aria-label=\"More\">\r\n        \t<md-icon md-svg-icon=\"../../images/arrow_down.svg\"></md-icon>\r\n      </md-button>\r\n    </div>\r\n  </md-toolbar>\r\n  <md-content class=\"md-padding\" layout-align=\"center\">\r\n    <formulaire-new-patient\r\n      data=\"$ctrl.data\"\r\n      ng-show=\"$ctrl.formulaire == true\"\r\n      on-validation=\"$ctrl.updateInfirmiers()\"></formulaire-new-patient>\r\n  </md-content>\r\n  </br>\r\n\r\n\r\n<!-- Liste des patients restants de patient restant -->\r\n\t<md-toolbar >\r\n      <div class=\"md-toolbar-tools\">\r\n        <h2><span>Patients non affectés</span></h2>\r\n        <span flex></span>\r\n\r\n        <md-button ng-click= \"$ctrl.showPatientsRestants()\" class=\"md-icon-button\" aria-label=\"More\">\r\n          <md-icon md-svg-icon=\"../../images/arrow_down.svg\"></md-icon>\r\n        </md-button>\r\n\r\n      </div>\r\n    </md-toolbar>\r\n\r\n    <div ng-show=\"$ctrl.patientsRestants == true\">\r\n    \t<md-grid-list\r\n        md-cols-xs=\"1\" md-cols-sm=\"2\" md-cols-md=\"4\" md-cols-gt-md=\"6\"\r\n        md-row-height-gt-md=\"1:1\" md-row-height=\"2:2\"\r\n        md-gutter=\"12px\" md-gutter-gt-sm=\"8px\" >\r\n        \t<md-grid-tile class=\"md-whiteframe-2dp\" ng-repeat=\"patientY in $ctrl.data.objectPatients\" ng-if=\"patientY.infirmier == null\">\r\n    \t\t\t<patient data=\"patientY\"></patient>\r\n    \t\t</md-grid-tile>\r\n    \t</md-grid-list>\r\n    </div>\r\n\r\n\r\n</md-content>\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n"
+	module.exports = "<!-- <md-toolbar class=\"titre\">{{ $ctrl.titre }}</md-toolbar> -->\n\n<!-- Afficher la liste des patients pour chaque Infirmier -->\n<md-content class=\"md-whiteframe-2dp\" ng-cloak>\n\n\n  <md-toolbar >\n    <div class=\"md-toolbar-tools\">\n\n      <h2>\n        <span>Gestion des infimiers </span>\n      </h2>\n      <span flex></span>\n\n      <md-button ng-click= \"$ctrl.showFormulaire()\" class=\"md-icon-button\" aria-label=\"More\">\n        <md-icon md-svg-icon=\"../../images/svg/design/ic_expand_more_48px.svg\"></md-icon>\n      </md-button>\n\n    </div>\n  </md-toolbar>\n\n  <md-content class=\"md-padding\">\n      <md-tabs md-selected=\"selectedIndex\" md-border-bottom md-autoselect>\n        \t<md-tab\n              ng-repeat=\"inf in $ctrl.data.objectInfirmiers\"\n              ng-disabled=\"tab.disabled\"\n              label=\"{{inf.nom | uppercase}} {{inf.prenom}}\">\n          \t<md-content\n              class=\"md-padding\",\"demo-tab\",\"tab-content\"\n              layout=\"row\">\n            \t\t<md-list\n                  ng-repeat=\"patientX in inf.patients\"\n                  layout=\"row\">\n                      <md-content layout=\"column\">\n                        <!-- affiche un patient -->\n              \t\t\t\t\t<patient data=\"patientX\" layout-padding></patient>\n                        <!-- actions sur un patient -->\n                        <div class=\"lock-size\" layout=\"row\" layout-align=\"center center\">\n                          <md-fab-speed-dial\n                              md-direction=\"up\"\n                              ng-class=\"md-scale\"\n                              md-open=\"$ctrl.isOpen\">\n                            <md-fab-trigger>\n                              <md-button aria-label=\"menu\" class=\"md-fab md-warn\">\n                                <md-icon md-svg-src=\"img/icons/menu.svg\"></md-icon>\n                              </md-button>\n                            </md-fab-trigger>\n                            <md-fab-actions>\n                                <md-button\n                                  class=\"md-fab md-raised md-mini\"\n                                  ng-click=\"$ctrl.modifierPatient(ev)\"\n                                  type=\"submit\">\n                                  Modifier</md-button>\n                                <md-button\n                                  class=\"md-fab md-raised md-mini\"\n                                  ng-click=\"$ctrl.desaffecterPatient(patientX)\"\n                                  type=\"submit\">\n                                  Désaffecter</md-button>\n                                <md-button\n                                  class=\"md-fab md-raised md-mini\"\n                                  ng-click=\"$ctrl.supprimerPatient(patientX)\"\n                                  type=\"submit\">\n                                  Supprimer</md-button>\n                            </md-fab-actions>\n                          </md-fab-speed-dial>\n                        </div>\n                        <md-divider ng-if=\"!$last\"></md-divider>\n                      </md-content>\n            \t\t</md-list-item>\n  \t        </md-content>\n        \t</md-tab>\n      </md-tabs>\n  </md-content>\n  </br>\n\n\n<!-- Ajouter un patient au tableau -->\n  <md-toolbar >\n    <div class=\"md-toolbar-tools\">\n      <h2><span>Ajouter un patient </span></h2>\n      <span flex></span>\n      <md-button ng-click= \"$ctrl.showFormulaire()\" class=\"md-icon-button\" aria-label=\"More\">\n        \t<md-icon md-svg-icon=\"../../images/svg/design/ic_expand_more_48px.svg\"></md-icon>\n      </md-button>\n    </div>\n  </md-toolbar>\n  <md-content class=\"md-padding\" layout-align=\"center\">\n    <formulaire-new-patient\n      data=\"$ctrl.data\"\n      ng-show=\"$ctrl.formulaire == true\"\n      on-validation=\"$ctrl.updateInfirmiers()\"></formulaire-new-patient>\n  </md-content>\n  </br>\n\n\n<!-- Liste des patients restants de patient restant -->\n\t<md-toolbar >\n      <div class=\"md-toolbar-tools\">\n        <h2><span>Patients non affectés</span></h2>\n        <span flex></span>\n\n        <md-button ng-click= \"$ctrl.showPatientsRestants()\" class=\"md-icon-button\" aria-label=\"More\">\n          <md-icon md-svg-icon=\"../../images/svg/design/ic_expand_more_48px.svg\"></md-icon>\n        </md-button>\n\n      </div>\n    </md-toolbar>\n\n    <div ng-show=\"$ctrl.patientsRestants == true\">\n    \t<md-grid-list\n        md-cols-xs=\"1\" md-cols-sm=\"2\" md-cols-md=\"4\" md-cols-gt-md=\"6\"\n        md-row-height-gt-md=\"1:1\" md-row-height=\"2:2\"\n        md-gutter=\"12px\" md-gutter-gt-sm=\"8px\" >\n        \t<md-grid-tile class=\"md-whiteframe-2dp\" ng-repeat=\"patientY in $ctrl.data.objectPatients\" ng-if=\"patientY.infirmier == null\">\n    \t\t\t<patient data=\"patientY\"></patient>\n    \t\t</md-grid-tile>\n    \t</md-grid-list>\n    </div>\n\n\n</md-content>\n\n\n        <patient-map  data=\"$ctrl.data\"> </patient-map>\n        \n\n\n\n\n\n\n"
 
 /***/ },
 /* 16 */
@@ -59880,7 +59881,7 @@
 /* 18 */
 /***/ function(module, exports) {
 
-	var proxyNF = function($http){
+		var proxyNF = function($http){
 
 		// Message d'accueil
 		console.log("Hello ! this is proxy !");
@@ -60078,11 +60079,17 @@
 
 /***/ },
 /* 19 */
+/***/ function(module, exports) {
+
+	module.exports = "\n<form name=\"AjouterPatient\" novalidate ng-submit=\"\n\t\t\t\t\tAjouterPatient.$valid && $ctrl.submitPatient()\" id=\"popupContainer\">\n\t<md-input-container>\n        <label for=\"patientName\">Nom</label>\n        <input name=\"nom\" type=\"text\" ng-model=\"$ctrl.nouveauPatient.patientName\" required>\n        <div ng-messages=\"AjouterPatient.nom.$error\">\n            <div ng-message=\"required\">Name is required.</div>\n        </div>\n  \t</md-input-container>\n\n\t<md-input-container>\n\t    <label for=\"patientForname\">Prenom</label>\n\t    <input type=\"text\" ng-model=\"$ctrl.nouveauPatient.patientForname\">\n\t</md-input-container>\n\n\t<md-input-container>\n\t\t<label>Sexe</label>\n\t\t<md-select ng-model=\"$ctrl.nouveauPatient.patientSex\">\n\t\t\t<md-option ng-repeat=\"x in $ctrl.sexe\" ng-value=\"x.sexe\">\n\t\t\t{{ x.sexe }}\n\t\t\t</md-option>\n\t\t</md-select>\n\t</md-input-container>\n\n\t<md-input-container>\n\t    <label for=\"patientNumber\">N° de sécurité sociale</label>\n\t    <input name=\"social\" type=\"text\" ng-model=\"$ctrl.nouveauPatient.patientNumber\" ng-pattern=\"/^[0-9]{15}$/\" required>\n\t    <div ng-messages=\"AjouterPatient.social.$error\">\n\t        <div ng-message=\"pattern\",\"required\"> SSN composé de 15 chiffres </div>\n\t    </div>\n\t</md-input-container>\n\n\t<md-input-container>\n\t    <label for=\"patientBirthday\">Date de naissance</label>\n\t    <input type=\"text\" ng-model=\"$ctrl.nouveauPatient.patientBirthday\">\n\t</md-input-container>\n\n\t<md-input-container>\n\t    <label for=\"patientFloor\">Etage</label>\n\t    <input type=\"text\" ng-model=\"$ctrl.nouveauPatient.patientFloor\">\n\t</md-input-container>\n\n\t<md-input-container>\n\t    <label for=\"patientStreet\">Rue</label>\n\t    <input type=\"text\" ng-model=\"$ctrl.nouveauPatient.patientStreet\">\n\t</md-input-container>\n\n\t<md-input-container>\n\t    <label for=\"postalCode\">Code postal</label>\n\t    <input type=\"text\" ng-model=\"$ctrl.nouveauPatient.postalCode\">\n\t</md-input-container>\n\n\t<md-input-container>\n\t    <label for=\"patientCity\">Ville</label>\n\t    <input type=\"text\" ng-model=\"$ctrl.nouveauPatient.patientCity\">\n\t</md-input-container>\n\n\t</br>\n\n\t<md-checkbox ng-model=\"$ctrl.check\">\n\t\t Sélectionnez un infirmier\n\t</md-checkbox>\n\n\t<md-input-container ng-show=\"$ctrl.check == true\">\n\t\t<label>Sélectionnez un infirmier</label>\n\t\t<md-select ng-model=\"$ctrl.affecterInfirmier.infirmier\">\n\t\t\t<md-option ng-repeat=\"inf in $ctrl.data.objectInfirmiers\" ng-value=\"inf.id\">\n\t\t\t{{ inf.nom | uppercase }} {{ inf.prenom }}\n\t\t\t</md-option>\n\t\t</md-select>\n\t</md-input-container>\n\n\t<md-button ng-disabled=\"AjouterPatient.nom.$invalid || AjouterPatient.social.$invalid\" class=\"md-raised md-primary\" ng-click=\"$ctrl.showAlert($event)\" type=\"submit\">Submit</md-button>\n\n\n</form>\n"
+
+/***/ },
+/* 20 */
 /***/ function(module, exports, __webpack_require__) {
 
 	// Template HTML
-	var template = __webpack_require__( 20 );
-	__webpack_require__( 21 );
+	var template = __webpack_require__( 21 );
+	__webpack_require__( 22 );
 
 	// Définition du composant
 	module.exports = function(moduleAngular) {
@@ -60104,29 +60111,33 @@
 	}
 
 /***/ },
-/* 20 */
+/* 21 */
 /***/ function(module, exports) {
 
-	module.exports = "<md-list-item class=\"md-3-line\" ng-click=\"null\">\r\n\t<img ng-src=\"../../{{ $ctrl.data.photo }}\" class=\"md-avatar\" alt=\"{{$ctrl.data.nom}}\">\r\n\t<div class=\"md-list-item-text\">\r\n\t\t  <h3>{{$ctrl.data.nom | uppercase}} {{$ctrl.data.prenom}}</h3>\r\n\t\t  <h4>{{$ctrl.data.id}}</h4>\r\n\t\t  <p>Infirmier</p>\r\n\t</div>\r\n\t<md-divider md-inset ng-if=\"!$last\"></md-divider>\r\n</md-list-item>"
+	module.exports = "<md-list-item class=\"md-3-line\" ng-click=\"null\">\n\t<img ng-src=\"../../{{ $ctrl.data.photo }}\" class=\"md-avatar\" alt=\"{{$ctrl.data.nom}}\">\n\t<div class=\"md-list-item-text\">\n\t\t  <h3>{{$ctrl.data.nom | uppercase}} {{$ctrl.data.prenom}}</h3>\n\t\t  <h4>{{$ctrl.data.id}}</h4>\n\t\t  <p>Infirmier</p>\n\t</div>\n\t<md-divider md-inset ng-if=\"!$last\"></md-divider>\n</md-list-item>"
 
 /***/ },
-/* 21 */
+/* 22 */
 /***/ function(module, exports) {
 
 	// removed by extract-text-webpack-plugin
 
 /***/ },
-/* 22 */,
-/* 23 */
+/* 23 */,
+/* 24 */
 /***/ function(module, exports, __webpack_require__) {
 
 	// Template HTML
-	var template = __webpack_require__( 24 );
-	var formulaire = __webpack_require__( 25)
-	__webpack_require__( 26 );
+	var template = __webpack_require__( 25 );
+	var formulaire = __webpack_require__( 19)
+	var patientMapTemplate = __webpack_require__(26);
+
+
 
 	// Définition du composant
 	module.exports = function(moduleAngular) {
+	    __webpack_require__( 27 );
+	    var mapsapi = __webpack_require__( 29 )( 'AIzaSyDsF_LpIDzCDd0ieieyl2gfJ2xMW3u27CY' );
 
 	    var proxyNF = __webpack_require__(18)(moduleAngular);
 
@@ -60177,7 +60188,7 @@
 
 	        };
 
-	        // boite dialogue
+	        // boite dialogue réponse suite à l'ajout d'un patient
 	        ctrl.showAlert = function(ev) {
 	         	   var existePatient = false;
 
@@ -60213,6 +60224,65 @@
 	              };
 	        };
 
+
+
+	        //-- Affichage de la carte 
+	             mapsapi().then( function( maps ) {
+	              var maCarte=  new google.maps.Map(document.getElementById('map')
+	                , { center: new google.maps.LatLng(45.193861, 5.768843)
+	                  , zoom: 11
+	                  }
+	                );
+	             var marker1= new google.maps.Marker(
+	                { position  : new google.maps.LatLng(45.193861, 5.768843)
+	                , map       : maCarte
+	                , title     : "Je suis ici!"
+	                } );
+	             var marker2= new google.maps.Marker(
+	                { position  : new google.maps.LatLng(44.9333, 4.9)
+	                , map       : maCarte
+	                , title     : "Je suis ici!"
+	                } );
+
+
+	             //-- Affichage des marqueurs des patients déjà présent
+	            var adresse = "80 Rue de la Chimie, 38400 Saint-Martin-d'Hères, France";
+
+	              var adresses = []; // tableau de chaine de caracteres de l'adresse de chaque patient
+	              ctrl.data.objectPatients.forEach(function(patient){
+	                patient.adresse.forEach(function(adresse){
+	                        var stringAdresse = "1 "+ adresse.rue +", "+adresse.codePostal+" "+adresse.ville +", France";
+	                        adresses.push(stringAdresse);
+	                })
+	              });
+
+	              // geocodage
+	                geocoder = new google.maps.Geocoder();
+
+	                 adresses.forEach(function(uneAdresse){
+	                    geocoder.geocode(
+	                               {'address': uneAdresse}
+	                         , function(results, status) {
+	                            if (status == google.maps.GeocoderStatus.OK) {
+	                                    new google.maps.Marker({
+	                                            map: maCarte,
+	                                            position: results[0].geometry.location
+	                                          });
+	                                } else {console.error("Error geocoding:", status);}
+	                            }
+	                    );
+	                })
+
+
+
+
+
+
+
+	           
+
+	            });
+	    
 	      //-------------------------
 	    };
 
@@ -60234,25 +60304,908 @@
 	        },
 	        'controller'    : ctrlPatients
 	    });
+
+	    moduleAngular.component( "patientMap", {
+	        'template'    : patientMapTemplate,
+	        bindings    : {
+	            onValidation: "&",
+	            data: "<"
+	        },
+	        'controller'    : ctrlPatients
+	    });
+
+
 	};
-
-/***/ },
-/* 24 */
-/***/ function(module, exports) {
-
-	module.exports = "<table flex layout=\"column\">\r\n\t<tr>\r\n\t\t<td>{{$ctrl.data.nom | uppercase}} {{$ctrl.data.prenom}}</td>\r\n\t</tr>\r\n\t<tr>\r\n\t\t<td>{{ $ctrl.data.id }}</td>\r\n\t</tr>\r\n\t<tr>\r\n\t\t<td ng-repeat=\"ad in $ctrl.data.adresse\">\r\n\t\t\t{{ ad.rue }}</br>\r\n\t\t\t{{ ad.ville }}</br>\r\n\t\t\t{{ ad.codePostal }}</br>\r\n\t\t</td>\r\n\t</tr>\r\n</table>\r\n"
 
 /***/ },
 /* 25 */
 /***/ function(module, exports) {
 
-	module.exports = "\r\n<form name=\"AjouterPatient\" novalidate ng-submit=\"\r\n\t\t\t\t\tAjouterPatient.$valid && $ctrl.submitPatient()\" id=\"popupContainer\">\r\n\t<md-input-container>\r\n        <label for=\"patientName\">Nom</label>\r\n        <input name=\"nom\" type=\"text\" ng-model=\"$ctrl.nouveauPatient.patientName\" required>\r\n        <div ng-messages=\"AjouterPatient.nom.$error\">\r\n            <div ng-message=\"required\">Name is required.</div>\r\n        </div>\r\n  \t</md-input-container>\r\n\r\n\t<md-input-container>\r\n\t    <label for=\"patientForname\">Prenom</label>\r\n\t    <input type=\"text\" ng-model=\"$ctrl.nouveauPatient.patientForname\">\r\n\t</md-input-container>\r\n\r\n\t<md-input-container>\r\n\t\t<label>Sexe</label>\r\n\t\t<md-select ng-model=\"$ctrl.nouveauPatient.patientSex\">\r\n\t\t\t<md-option ng-repeat=\"x in $ctrl.sexe\" ng-value=\"x.sexe\">\r\n\t\t\t{{ x.sexe }}\r\n\t\t\t</md-option>\r\n\t\t</md-select>\r\n\t</md-input-container>\r\n\r\n\t<md-input-container>\r\n\t    <label for=\"patientNumber\">N° de sécurité sociale</label>\r\n\t    <input name=\"social\" type=\"text\" ng-model=\"$ctrl.nouveauPatient.patientNumber\" ng-pattern=\"/^[0-9]{15}$/\" required>\r\n\t    <div ng-messages=\"AjouterPatient.social.$error\">\r\n\t        <div ng-message=\"pattern\",\"required\"> SSN composé de 15 chiffres </div>\r\n\t    </div>\r\n\t</md-input-container>\r\n\r\n\t<md-input-container>\r\n\t    <label for=\"patientBirthday\">Date de naissance</label>\r\n\t    <input type=\"text\" ng-model=\"$ctrl.nouveauPatient.patientBirthday\">\r\n\t</md-input-container>\r\n\r\n\t<md-input-container>\r\n\t    <label for=\"patientFloor\">Etage</label>\r\n\t    <input type=\"text\" ng-model=\"$ctrl.nouveauPatient.patientFloor\">\r\n\t</md-input-container>\r\n\r\n\t<md-input-container>\r\n\t    <label for=\"patientStreet\">Rue</label>\r\n\t    <input type=\"text\" ng-model=\"$ctrl.nouveauPatient.patientStreet\">\r\n\t</md-input-container>\r\n\r\n\t<md-input-container>\r\n\t    <label for=\"postalCode\">Code postal</label>\r\n\t    <input type=\"text\" ng-model=\"$ctrl.nouveauPatient.postalCode\">\r\n\t</md-input-container>\r\n\r\n\t<md-input-container>\r\n\t    <label for=\"patientCity\">Ville</label>\r\n\t    <input type=\"text\" ng-model=\"$ctrl.nouveauPatient.patientCity\">\r\n\t</md-input-container>\r\n\r\n\t</br>\r\n\r\n\t<md-checkbox ng-model=\"$ctrl.check\">\r\n\t\t Sélectionnez un infirmier\r\n\t</md-checkbox>\r\n\r\n\t<md-input-container ng-show=\"$ctrl.check == true\">\r\n\t\t<label>Sélectionnez un infirmier</label>\r\n\t\t<md-select ng-model=\"$ctrl.affecterInfirmier.infirmier\">\r\n\t\t\t<md-option ng-repeat=\"inf in $ctrl.data.objectInfirmiers\" ng-value=\"inf.id\">\r\n\t\t\t{{ inf.nom | uppercase }} {{ inf.prenom }}\r\n\t\t\t</md-option>\r\n\t\t</md-select>\r\n\t</md-input-container>\r\n\r\n\t<md-button ng-disabled=\"AjouterPatient.nom.$invalid || AjouterPatient.social.$invalid\" class=\"md-raised md-primary\" ng-click=\"$ctrl.showAlert($event)\" type=\"submit\">Submit</md-button>\r\n\r\n\r\n</form>\r\n"
+	module.exports = "<table flex layout=\"column\">\n\t<tr>\n\t\t<td>{{$ctrl.data.nom | uppercase}} {{$ctrl.data.prenom}}</td>\n\t</tr>\n\t<tr>\n\t\t<td>{{ $ctrl.data.id }}</td>\n\t</tr>\n\t<tr>\n\t\t<td ng-repeat=\"ad in $ctrl.data.adresse\">\n\t\t\t{{ ad.rue }}</br>\n\t\t\t{{ ad.ville }}</br>\n\t\t\t{{ ad.codePostal }}</br>\n\t\t</td>\n\t</tr>\n</table>\n"
 
 /***/ },
 /* 26 */
 /***/ function(module, exports) {
 
+	module.exports = "\n<h3> Manges mes mortssssss </h3>\n    <div id=\"map\"> </div>\n\n"
+
+/***/ },
+/* 27 */
+/***/ function(module, exports) {
+
 	// removed by extract-text-webpack-plugin
+
+/***/ },
+/* 28 */,
+/* 29 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/** @module google-maps-api */
+
+	var script = __webpack_require__( 30 ),
+	  promise = __webpack_require__( 31 );
+
+	var maps = null,
+	  callBacks = [],
+	  key;
+
+	window.$$mapsCB = function() {
+
+	  maps = google.maps;
+
+	  for( var i = 0, len = callBacks.length; i < len; i++ ) {
+
+	    resolve.apply( undefined, callBacks[ i ] );
+	  }
+	};
+
+	function resolve( onOk, onErr, onComplete, err ) {
+
+	  if( !err ) {
+
+	    onOk( maps );
+
+	    if( onComplete )
+	      onComplete( undefined, maps );
+	  } else {
+
+	    onErr( err );
+
+	    if( onComplete )
+	      onComplete( err );
+	  }
+	}
+
+
+	/**
+	 * Load a Google Maps API Object asynchronously. This module will return a Promise.
+	 * Which will on resolved will return the "google.maps" object.
+	 *
+	 * Or if you prefer you can simply use the callback instead.
+	 *
+	 * @param  {String} apikey Your Google Maps API Key
+	 * @param  {Function} [onComplete] A callback which will return the google.maps object
+	 * @return {Promise} When this promise resolves it will return the google.maps object
+	 *
+	 * @example using via promise
+	 *
+	 * ```javascript
+	 * var mapsapi = require( 'google-maps-api' )( 'your api key' );
+	 *
+	 * mapsapi().then( function( maps ) {
+	 *
+	 *  //use the google.maps object as you please
+	 * });
+	 * ```
+	 *
+	 * @example using via callback
+	 * ```javascript
+	 * require( 'google-maps-api' )( 'your api key', function( maps ) {
+	 *
+	 *  //use the google.maps object as you please
+	 * })
+	 * ```
+	 */
+	module.exports = function( apikey, libraries, onComplete ) {
+
+	  key = apikey || key;
+	  if (typeof libraries == 'function') {
+	    onComplete = libraries;
+	    libraries = [];
+	  }
+
+	  return function() {
+
+	    return new promise( function( onOk, onErr ) {
+
+	      if( !key ) {
+
+	        resolve( onOk, onErr, onComplete, new Error( 'No API key passed to require(\'google-maps-api\')' ) );
+	      } else {
+
+	        if( maps ) {
+
+	          resolve( onOk, onErr, onComplete );
+	        } else {
+
+	          callBacks.push( [ onOk, onErr, onComplete ] );
+
+	          if (callBacks.length == 1) {
+	            var auth = '';
+	            if (typeof key == 'string') {
+
+	              auth = '&key=' + key;
+	            } else if (typeof key == 'object') {
+
+	              auth = '&' + Object.keys(key).map(function (k) {
+	                return k + '=' + encodeURIComponent(key[k]);
+	              }).join('&');
+	            }
+
+	            var url = 'https://maps.googleapis.com/maps/api/js?v=3&callback=$$mapsCB' + auth;
+	            if (Array.isArray(libraries) && libraries.length > 0) {
+	              url+='&libraries='+libraries.join(',');
+	            }
+	            script( url );
+	          }
+	        }
+	      }
+	    });
+	  };
+	};
+
+
+/***/ },
+/* 30 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
+	  * $script.js JS loader & dependency manager
+	  * https://github.com/ded/script.js
+	  * (c) Dustin Diaz 2014 | License MIT
+	  */
+
+	(function (name, definition) {
+	  if (typeof module != 'undefined' && module.exports) module.exports = definition()
+	  else if (true) !(__WEBPACK_AMD_DEFINE_FACTORY__ = (definition), __WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ? (__WEBPACK_AMD_DEFINE_FACTORY__.call(exports, __webpack_require__, exports, module)) : __WEBPACK_AMD_DEFINE_FACTORY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__))
+	  else this[name] = definition()
+	})('$script', function () {
+	  var doc = document
+	    , head = doc.getElementsByTagName('head')[0]
+	    , s = 'string'
+	    , f = false
+	    , push = 'push'
+	    , readyState = 'readyState'
+	    , onreadystatechange = 'onreadystatechange'
+	    , list = {}
+	    , ids = {}
+	    , delay = {}
+	    , scripts = {}
+	    , scriptpath
+	    , urlArgs
+
+	  function every(ar, fn) {
+	    for (var i = 0, j = ar.length; i < j; ++i) if (!fn(ar[i])) return f
+	    return 1
+	  }
+	  function each(ar, fn) {
+	    every(ar, function (el) {
+	      return !fn(el)
+	    })
+	  }
+
+	  function $script(paths, idOrDone, optDone) {
+	    paths = paths[push] ? paths : [paths]
+	    var idOrDoneIsDone = idOrDone && idOrDone.call
+	      , done = idOrDoneIsDone ? idOrDone : optDone
+	      , id = idOrDoneIsDone ? paths.join('') : idOrDone
+	      , queue = paths.length
+	    function loopFn(item) {
+	      return item.call ? item() : list[item]
+	    }
+	    function callback() {
+	      if (!--queue) {
+	        list[id] = 1
+	        done && done()
+	        for (var dset in delay) {
+	          every(dset.split('|'), loopFn) && !each(delay[dset], loopFn) && (delay[dset] = [])
+	        }
+	      }
+	    }
+	    setTimeout(function () {
+	      each(paths, function loading(path, force) {
+	        if (path === null) return callback()
+	        
+	        if (!force && !/^https?:\/\//.test(path) && scriptpath) {
+	          path = (path.indexOf('.js') === -1) ? scriptpath + path + '.js' : scriptpath + path;
+	        }
+	        
+	        if (scripts[path]) {
+	          if (id) ids[id] = 1
+	          return (scripts[path] == 2) ? callback() : setTimeout(function () { loading(path, true) }, 0)
+	        }
+
+	        scripts[path] = 1
+	        if (id) ids[id] = 1
+	        create(path, callback)
+	      })
+	    }, 0)
+	    return $script
+	  }
+
+	  function create(path, fn) {
+	    var el = doc.createElement('script'), loaded
+	    el.onload = el.onerror = el[onreadystatechange] = function () {
+	      if ((el[readyState] && !(/^c|loade/.test(el[readyState]))) || loaded) return;
+	      el.onload = el[onreadystatechange] = null
+	      loaded = 1
+	      scripts[path] = 2
+	      fn()
+	    }
+	    el.async = 1
+	    el.src = urlArgs ? path + (path.indexOf('?') === -1 ? '?' : '&') + urlArgs : path;
+	    head.insertBefore(el, head.lastChild)
+	  }
+
+	  $script.get = create
+
+	  $script.order = function (scripts, id, done) {
+	    (function callback(s) {
+	      s = scripts.shift()
+	      !scripts.length ? $script(s, id, done) : $script(s, callback)
+	    }())
+	  }
+
+	  $script.path = function (p) {
+	    scriptpath = p
+	  }
+	  $script.urlArgs = function (str) {
+	    urlArgs = str;
+	  }
+	  $script.ready = function (deps, ready, req) {
+	    deps = deps[push] ? deps : [deps]
+	    var missing = [];
+	    !each(deps, function (dep) {
+	      list[dep] || missing[push](dep);
+	    }) && every(deps, function (dep) {return list[dep]}) ?
+	      ready() : !function (key) {
+	      delay[key] = delay[key] || []
+	      delay[key][push](ready)
+	      req && req(missing)
+	    }(deps.join('|'))
+	    return $script
+	  }
+
+	  $script.done = function (idOrDone) {
+	    $script([null], idOrDone)
+	  }
+
+	  return $script
+	});
+
+
+/***/ },
+/* 31 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	module.exports = __webpack_require__(32)
+	__webpack_require__(36)
+	__webpack_require__(37)
+	__webpack_require__(38)
+
+/***/ },
+/* 32 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	var asap = __webpack_require__(33)
+
+	module.exports = Promise;
+	function Promise(fn) {
+	  if (typeof this !== 'object') throw new TypeError('Promises must be constructed via new')
+	  if (typeof fn !== 'function') throw new TypeError('not a function')
+	  var state = null
+	  var value = null
+	  var deferreds = []
+	  var self = this
+
+	  this.then = function(onFulfilled, onRejected) {
+	    return new self.constructor(function(resolve, reject) {
+	      handle(new Handler(onFulfilled, onRejected, resolve, reject))
+	    })
+	  }
+
+	  function handle(deferred) {
+	    if (state === null) {
+	      deferreds.push(deferred)
+	      return
+	    }
+	    asap(function() {
+	      var cb = state ? deferred.onFulfilled : deferred.onRejected
+	      if (cb === null) {
+	        (state ? deferred.resolve : deferred.reject)(value)
+	        return
+	      }
+	      var ret
+	      try {
+	        ret = cb(value)
+	      }
+	      catch (e) {
+	        deferred.reject(e)
+	        return
+	      }
+	      deferred.resolve(ret)
+	    })
+	  }
+
+	  function resolve(newValue) {
+	    try { //Promise Resolution Procedure: https://github.com/promises-aplus/promises-spec#the-promise-resolution-procedure
+	      if (newValue === self) throw new TypeError('A promise cannot be resolved with itself.')
+	      if (newValue && (typeof newValue === 'object' || typeof newValue === 'function')) {
+	        var then = newValue.then
+	        if (typeof then === 'function') {
+	          doResolve(then.bind(newValue), resolve, reject)
+	          return
+	        }
+	      }
+	      state = true
+	      value = newValue
+	      finale()
+	    } catch (e) { reject(e) }
+	  }
+
+	  function reject(newValue) {
+	    state = false
+	    value = newValue
+	    finale()
+	  }
+
+	  function finale() {
+	    for (var i = 0, len = deferreds.length; i < len; i++)
+	      handle(deferreds[i])
+	    deferreds = null
+	  }
+
+	  doResolve(fn, resolve, reject)
+	}
+
+
+	function Handler(onFulfilled, onRejected, resolve, reject){
+	  this.onFulfilled = typeof onFulfilled === 'function' ? onFulfilled : null
+	  this.onRejected = typeof onRejected === 'function' ? onRejected : null
+	  this.resolve = resolve
+	  this.reject = reject
+	}
+
+	/**
+	 * Take a potentially misbehaving resolver function and make sure
+	 * onFulfilled and onRejected are only called once.
+	 *
+	 * Makes no guarantees about asynchrony.
+	 */
+	function doResolve(fn, onFulfilled, onRejected) {
+	  var done = false;
+	  try {
+	    fn(function (value) {
+	      if (done) return
+	      done = true
+	      onFulfilled(value)
+	    }, function (reason) {
+	      if (done) return
+	      done = true
+	      onRejected(reason)
+	    })
+	  } catch (ex) {
+	    if (done) return
+	    done = true
+	    onRejected(ex)
+	  }
+	}
+
+
+/***/ },
+/* 33 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/* WEBPACK VAR INJECTION */(function(process, setImmediate) {
+	// Use the fastest possible means to execute a task in a future turn
+	// of the event loop.
+
+	// linked list of tasks (single, with head node)
+	var head = {task: void 0, next: null};
+	var tail = head;
+	var flushing = false;
+	var requestFlush = void 0;
+	var isNodeJS = false;
+
+	function flush() {
+	    /* jshint loopfunc: true */
+
+	    while (head.next) {
+	        head = head.next;
+	        var task = head.task;
+	        head.task = void 0;
+	        var domain = head.domain;
+
+	        if (domain) {
+	            head.domain = void 0;
+	            domain.enter();
+	        }
+
+	        try {
+	            task();
+
+	        } catch (e) {
+	            if (isNodeJS) {
+	                // In node, uncaught exceptions are considered fatal errors.
+	                // Re-throw them synchronously to interrupt flushing!
+
+	                // Ensure continuation if the uncaught exception is suppressed
+	                // listening "uncaughtException" events (as domains does).
+	                // Continue in next event to avoid tick recursion.
+	                if (domain) {
+	                    domain.exit();
+	                }
+	                setTimeout(flush, 0);
+	                if (domain) {
+	                    domain.enter();
+	                }
+
+	                throw e;
+
+	            } else {
+	                // In browsers, uncaught exceptions are not fatal.
+	                // Re-throw them asynchronously to avoid slow-downs.
+	                setTimeout(function() {
+	                   throw e;
+	                }, 0);
+	            }
+	        }
+
+	        if (domain) {
+	            domain.exit();
+	        }
+	    }
+
+	    flushing = false;
+	}
+
+	if (typeof process !== "undefined" && process.nextTick) {
+	    // Node.js before 0.9. Note that some fake-Node environments, like the
+	    // Mocha test runner, introduce a `process` global without a `nextTick`.
+	    isNodeJS = true;
+
+	    requestFlush = function () {
+	        process.nextTick(flush);
+	    };
+
+	} else if (typeof setImmediate === "function") {
+	    // In IE10, Node.js 0.9+, or https://github.com/NobleJS/setImmediate
+	    if (typeof window !== "undefined") {
+	        requestFlush = setImmediate.bind(window, flush);
+	    } else {
+	        requestFlush = function () {
+	            setImmediate(flush);
+	        };
+	    }
+
+	} else if (typeof MessageChannel !== "undefined") {
+	    // modern browsers
+	    // http://www.nonblocking.io/2011/06/windownexttick.html
+	    var channel = new MessageChannel();
+	    channel.port1.onmessage = flush;
+	    requestFlush = function () {
+	        channel.port2.postMessage(0);
+	    };
+
+	} else {
+	    // old browsers
+	    requestFlush = function () {
+	        setTimeout(flush, 0);
+	    };
+	}
+
+	function asap(task) {
+	    tail = tail.next = {
+	        task: task,
+	        domain: isNodeJS && process.domain,
+	        next: null
+	    };
+
+	    if (!flushing) {
+	        flushing = true;
+	        requestFlush();
+	    }
+	};
+
+	module.exports = asap;
+
+
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(34), __webpack_require__(35).setImmediate))
+
+/***/ },
+/* 34 */
+/***/ function(module, exports) {
+
+	// shim for using process in browser
+
+	var process = module.exports = {};
+	var queue = [];
+	var draining = false;
+	var currentQueue;
+	var queueIndex = -1;
+
+	function cleanUpNextTick() {
+	    draining = false;
+	    if (currentQueue.length) {
+	        queue = currentQueue.concat(queue);
+	    } else {
+	        queueIndex = -1;
+	    }
+	    if (queue.length) {
+	        drainQueue();
+	    }
+	}
+
+	function drainQueue() {
+	    if (draining) {
+	        return;
+	    }
+	    var timeout = setTimeout(cleanUpNextTick);
+	    draining = true;
+
+	    var len = queue.length;
+	    while(len) {
+	        currentQueue = queue;
+	        queue = [];
+	        while (++queueIndex < len) {
+	            if (currentQueue) {
+	                currentQueue[queueIndex].run();
+	            }
+	        }
+	        queueIndex = -1;
+	        len = queue.length;
+	    }
+	    currentQueue = null;
+	    draining = false;
+	    clearTimeout(timeout);
+	}
+
+	process.nextTick = function (fun) {
+	    var args = new Array(arguments.length - 1);
+	    if (arguments.length > 1) {
+	        for (var i = 1; i < arguments.length; i++) {
+	            args[i - 1] = arguments[i];
+	        }
+	    }
+	    queue.push(new Item(fun, args));
+	    if (queue.length === 1 && !draining) {
+	        setTimeout(drainQueue, 0);
+	    }
+	};
+
+	// v8 likes predictible objects
+	function Item(fun, array) {
+	    this.fun = fun;
+	    this.array = array;
+	}
+	Item.prototype.run = function () {
+	    this.fun.apply(null, this.array);
+	};
+	process.title = 'browser';
+	process.browser = true;
+	process.env = {};
+	process.argv = [];
+	process.version = ''; // empty string to avoid regexp issues
+	process.versions = {};
+
+	function noop() {}
+
+	process.on = noop;
+	process.addListener = noop;
+	process.once = noop;
+	process.off = noop;
+	process.removeListener = noop;
+	process.removeAllListeners = noop;
+	process.emit = noop;
+
+	process.binding = function (name) {
+	    throw new Error('process.binding is not supported');
+	};
+
+	process.cwd = function () { return '/' };
+	process.chdir = function (dir) {
+	    throw new Error('process.chdir is not supported');
+	};
+	process.umask = function() { return 0; };
+
+
+/***/ },
+/* 35 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/* WEBPACK VAR INJECTION */(function(setImmediate, clearImmediate) {var nextTick = __webpack_require__(34).nextTick;
+	var apply = Function.prototype.apply;
+	var slice = Array.prototype.slice;
+	var immediateIds = {};
+	var nextImmediateId = 0;
+
+	// DOM APIs, for completeness
+
+	exports.setTimeout = function() {
+	  return new Timeout(apply.call(setTimeout, window, arguments), clearTimeout);
+	};
+	exports.setInterval = function() {
+	  return new Timeout(apply.call(setInterval, window, arguments), clearInterval);
+	};
+	exports.clearTimeout =
+	exports.clearInterval = function(timeout) { timeout.close(); };
+
+	function Timeout(id, clearFn) {
+	  this._id = id;
+	  this._clearFn = clearFn;
+	}
+	Timeout.prototype.unref = Timeout.prototype.ref = function() {};
+	Timeout.prototype.close = function() {
+	  this._clearFn.call(window, this._id);
+	};
+
+	// Does not start the time, just sets up the members needed.
+	exports.enroll = function(item, msecs) {
+	  clearTimeout(item._idleTimeoutId);
+	  item._idleTimeout = msecs;
+	};
+
+	exports.unenroll = function(item) {
+	  clearTimeout(item._idleTimeoutId);
+	  item._idleTimeout = -1;
+	};
+
+	exports._unrefActive = exports.active = function(item) {
+	  clearTimeout(item._idleTimeoutId);
+
+	  var msecs = item._idleTimeout;
+	  if (msecs >= 0) {
+	    item._idleTimeoutId = setTimeout(function onTimeout() {
+	      if (item._onTimeout)
+	        item._onTimeout();
+	    }, msecs);
+	  }
+	};
+
+	// That's not how node.js implements it but the exposed api is the same.
+	exports.setImmediate = typeof setImmediate === "function" ? setImmediate : function(fn) {
+	  var id = nextImmediateId++;
+	  var args = arguments.length < 2 ? false : slice.call(arguments, 1);
+
+	  immediateIds[id] = true;
+
+	  nextTick(function onNextTick() {
+	    if (immediateIds[id]) {
+	      // fn.call() is faster so we optimize for the common use-case
+	      // @see http://jsperf.com/call-apply-segu
+	      if (args) {
+	        fn.apply(null, args);
+	      } else {
+	        fn.call(null);
+	      }
+	      // Prevent ids from leaking
+	      exports.clearImmediate(id);
+	    }
+	  });
+
+	  return id;
+	};
+
+	exports.clearImmediate = typeof clearImmediate === "function" ? clearImmediate : function(id) {
+	  delete immediateIds[id];
+	};
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(35).setImmediate, __webpack_require__(35).clearImmediate))
+
+/***/ },
+/* 36 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	var Promise = __webpack_require__(32)
+	var asap = __webpack_require__(33)
+
+	module.exports = Promise
+	Promise.prototype.done = function (onFulfilled, onRejected) {
+	  var self = arguments.length ? this.then.apply(this, arguments) : this
+	  self.then(null, function (err) {
+	    asap(function () {
+	      throw err
+	    })
+	  })
+	}
+
+/***/ },
+/* 37 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	//This file contains the ES6 extensions to the core Promises/A+ API
+
+	var Promise = __webpack_require__(32)
+	var asap = __webpack_require__(33)
+
+	module.exports = Promise
+
+	/* Static Functions */
+
+	function ValuePromise(value) {
+	  this.then = function (onFulfilled) {
+	    if (typeof onFulfilled !== 'function') return this
+	    return new Promise(function (resolve, reject) {
+	      asap(function () {
+	        try {
+	          resolve(onFulfilled(value))
+	        } catch (ex) {
+	          reject(ex);
+	        }
+	      })
+	    })
+	  }
+	}
+	ValuePromise.prototype = Promise.prototype
+
+	var TRUE = new ValuePromise(true)
+	var FALSE = new ValuePromise(false)
+	var NULL = new ValuePromise(null)
+	var UNDEFINED = new ValuePromise(undefined)
+	var ZERO = new ValuePromise(0)
+	var EMPTYSTRING = new ValuePromise('')
+
+	Promise.resolve = function (value) {
+	  if (value instanceof Promise) return value
+
+	  if (value === null) return NULL
+	  if (value === undefined) return UNDEFINED
+	  if (value === true) return TRUE
+	  if (value === false) return FALSE
+	  if (value === 0) return ZERO
+	  if (value === '') return EMPTYSTRING
+
+	  if (typeof value === 'object' || typeof value === 'function') {
+	    try {
+	      var then = value.then
+	      if (typeof then === 'function') {
+	        return new Promise(then.bind(value))
+	      }
+	    } catch (ex) {
+	      return new Promise(function (resolve, reject) {
+	        reject(ex)
+	      })
+	    }
+	  }
+
+	  return new ValuePromise(value)
+	}
+
+	Promise.all = function (arr) {
+	  var args = Array.prototype.slice.call(arr)
+
+	  return new Promise(function (resolve, reject) {
+	    if (args.length === 0) return resolve([])
+	    var remaining = args.length
+	    function res(i, val) {
+	      try {
+	        if (val && (typeof val === 'object' || typeof val === 'function')) {
+	          var then = val.then
+	          if (typeof then === 'function') {
+	            then.call(val, function (val) { res(i, val) }, reject)
+	            return
+	          }
+	        }
+	        args[i] = val
+	        if (--remaining === 0) {
+	          resolve(args);
+	        }
+	      } catch (ex) {
+	        reject(ex)
+	      }
+	    }
+	    for (var i = 0; i < args.length; i++) {
+	      res(i, args[i])
+	    }
+	  })
+	}
+
+	Promise.reject = function (value) {
+	  return new Promise(function (resolve, reject) { 
+	    reject(value);
+	  });
+	}
+
+	Promise.race = function (values) {
+	  return new Promise(function (resolve, reject) { 
+	    values.forEach(function(value){
+	      Promise.resolve(value).then(resolve, reject);
+	    })
+	  });
+	}
+
+	/* Prototype Methods */
+
+	Promise.prototype['catch'] = function (onRejected) {
+	  return this.then(null, onRejected);
+	}
+
+
+/***/ },
+/* 38 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	//This file contains then/promise specific extensions that are only useful for node.js interop
+
+	var Promise = __webpack_require__(32)
+	var asap = __webpack_require__(33)
+
+	module.exports = Promise
+
+	/* Static Functions */
+
+	Promise.denodeify = function (fn, argumentCount) {
+	  argumentCount = argumentCount || Infinity
+	  return function () {
+	    var self = this
+	    var args = Array.prototype.slice.call(arguments)
+	    return new Promise(function (resolve, reject) {
+	      while (args.length && args.length > argumentCount) {
+	        args.pop()
+	      }
+	      args.push(function (err, res) {
+	        if (err) reject(err)
+	        else resolve(res)
+	      })
+	      var res = fn.apply(self, args)
+	      if (res && (typeof res === 'object' || typeof res === 'function') && typeof res.then === 'function') {
+	        resolve(res)
+	      }
+	    })
+	  }
+	}
+	Promise.nodeify = function (fn) {
+	  return function () {
+	    var args = Array.prototype.slice.call(arguments)
+	    var callback = typeof args[args.length - 1] === 'function' ? args.pop() : null
+	    var ctx = this
+	    try {
+	      return fn.apply(this, arguments).nodeify(callback, ctx)
+	    } catch (ex) {
+	      if (callback === null || typeof callback == 'undefined') {
+	        return new Promise(function (resolve, reject) { reject(ex) })
+	      } else {
+	        asap(function () {
+	          callback.call(ctx, ex)
+	        })
+	      }
+	    }
+	  }
+	}
+
+	Promise.prototype.nodeify = function (callback, ctx) {
+	  if (typeof callback != 'function') return this
+
+	  this.then(function (value) {
+	    asap(function () {
+	      callback.call(ctx, null, value)
+	    })
+	  }, function (err) {
+	    asap(function () {
+	      callback.call(ctx, err)
+	    })
+	  })
+	}
+
 
 /***/ }
 /******/ ]);

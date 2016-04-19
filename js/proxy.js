@@ -1,4 +1,4 @@
-var proxyNF = function($http){
+	var proxyNF = function($http){
 
 	// Message d'accueil
 	console.log("Hello ! this is proxy !");
