@@ -11,19 +11,6 @@
     /* Set our own color */
     color: grey; }
 
-    .dialogdemoBasicUsage #popupContainer {
-  position: relative; }
-.dialogdemoBasicUsage .footer {
-  width: 100%;
-  text-align: center;
-  margin-left: 20px; }
-.dialogdemoBasicUsage .footer, .dialogdemoBasicUsage .footer > code {
-  font-size: 0.8em;
-  margin-top: 50px; }
-.dialogdemoBasicUsage button {
-  width: 200px; }
-.dialogdemoBasicUsage div#status {
-  color: #c60008; }
 
 .formulaire{
   width: 200px;

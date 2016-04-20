@@ -25,6 +25,20 @@
   outline: none;
 }
 
+.superman{
+  background-color: #f6f6f6;
+  cursor: move;
+}
+
+[ng-drag].drag-over{
+        border:solid 1px red;
+    }
+
+[ng-drop].drag-enter{
+    border:solid 5px red;
+}
+
+
 .tab-content {
   background: #f6f6f6;
 }
@@ -62,18 +76,3 @@
   width: 264px; }
 .md-padding .md-button.add-tab {
   transform: translateY(5px); }
-
-
-
-
-/* md-sidenav  {
-      width:35%;height:100%;
-      padding:20px;
-      background-color: #6bc7cc;
-    }
-
-md-content {
-      background-color : tan;
-      height:100%;
-      padding:20px;
-    } */

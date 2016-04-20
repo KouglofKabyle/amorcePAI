@@ -53,15 +53,16 @@
 
 	
 	var angular = __webpack_require__(2), angularMaterial=__webpack_require__( 4 );
-
 	__webpack_require__( 10 );
 
-	var cabinetModule = angular.module( "cabinet", [ angularMaterial, 'ngAnimate' ] )
+	var ngDraggable = __webpack_require__(14);
+
+	var cabinetModule = angular.module( "cabinet", [ angularMaterial, 'ngDraggable'] )
 			.config(function($mdThemingProvider) {
 	  			$mdThemingProvider.theme('default');
 			});;
 
-	__webpack_require__( 14 )(cabinetModule);
+	__webpack_require__( 15 )(cabinetModule);
 
 
 /***/ },
@@ -59776,16 +59777,675 @@
 /* 12 */,
 /* 13 */,
 /* 14 */
+/***/ function(module, exports) {
+
+	/*
+	 *
+	 * https://github.com/fatlinesofcode/ngDraggable
+	 */
+	angular.module("ngDraggable", [])
+	    .service('ngDraggable', [function() {
+
+
+	        var scope = this;
+	        scope.inputEvent = function(event) {
+	            if (angular.isDefined(event.touches)) {
+	                return event.touches[0];
+	            }
+	            //Checking both is not redundent. If only check if touches isDefined, angularjs isDefnied will return error and stop the remaining scripty if event.originalEvent is not defined.
+	            else if (angular.isDefined(event.originalEvent) && angular.isDefined(event.originalEvent.touches)) {
+	                return event.originalEvent.touches[0];
+	            }
+	            return event;
+	        };
+
+	    }])
+	    .directive('ngDrag', ['$rootScope', '$parse', '$document', '$window', 'ngDraggable', function ($rootScope, $parse, $document, $window, ngDraggable) {
+	        return {
+	            restrict: 'A',
+	            link: function (scope, element, attrs) {
+	                scope.value = attrs.ngDrag;
+	                var offset,_centerAnchor=false,_mx,_my,_tx,_ty,_mrx,_mry;
+	                var _hasTouch = ('ontouchstart' in window) || window.DocumentTouch && document instanceof DocumentTouch;
+	                var _pressEvents = 'touchstart mousedown';
+	                var _moveEvents = 'touchmove mousemove';
+	                var _releaseEvents = 'touchend mouseup';
+	                var _dragHandle;
+
+	                // to identify the element in order to prevent getting superflous events when a single element has both drag and drop directives on it.
+	                var _myid = scope.$id;
+	                var _data = null;
+
+	                var _dragOffset = null;
+
+	                var _dragEnabled = false;
+
+	                var _pressTimer = null;
+
+	                var onDragStartCallback = $parse(attrs.ngDragStart) || null;
+	                var onDragStopCallback = $parse(attrs.ngDragStop) || null;
+	                var onDragSuccessCallback = $parse(attrs.ngDragSuccess) || null;
+	                var allowTransform = angular.isDefined(attrs.allowTransform) ? scope.$eval(attrs.allowTransform) : true;
+
+	                var getDragData = $parse(attrs.ngDragData);
+
+	                // deregistration function for mouse move events in $rootScope triggered by jqLite trigger handler
+	                var _deregisterRootMoveListener = angular.noop;
+
+	                var initialize = function () {
+	                    element.attr('draggable', 'false'); // prevent native drag
+	                    // check to see if drag handle(s) was specified
+	                    // if querySelectorAll is available, we use this instead of find
+	                    // as JQLite find is limited to tagnames
+	                    if (element[0].querySelectorAll) {
+	                        var dragHandles = angular.element(element[0].querySelectorAll('[ng-drag-handle]'));
+	                    } else {
+	                        var dragHandles = element.find('[ng-drag-handle]');
+	                    }
+	                    if (dragHandles.length) {
+	                        _dragHandle = dragHandles;
+	                    }
+	                    toggleListeners(true);
+	                };
+
+	                var toggleListeners = function (enable) {
+	                    if (!enable)return;
+	                    // add listeners.
+
+	                    scope.$on('$destroy', onDestroy);
+	                    scope.$watch(attrs.ngDrag, onEnableChange);
+	                    scope.$watch(attrs.ngCenterAnchor, onCenterAnchor);
+	                    // wire up touch events
+	                    if (_dragHandle) {
+	                        // handle(s) specified, use those to initiate drag
+	                        _dragHandle.on(_pressEvents, onpress);
+	                    } else {
+	                        // no handle(s) specified, use the element as the handle
+	                        element.on(_pressEvents, onpress);
+	                    }
+	                    if(! _hasTouch && element[0].nodeName.toLowerCase() == "img"){
+	                        element.on('mousedown', function(){ return false;}); // prevent native drag for images
+	                    }
+	                };
+	                var onDestroy = function (enable) {
+	                    toggleListeners(false);
+	                };
+	                var onEnableChange = function (newVal, oldVal) {
+	                    _dragEnabled = (newVal);
+	                };
+	                var onCenterAnchor = function (newVal, oldVal) {
+	                    if(angular.isDefined(newVal))
+	                        _centerAnchor = (newVal || 'true');
+	                };
+
+	                var isClickableElement = function (evt) {
+	                    return (
+	                        angular.isDefined(angular.element(evt.target).attr("ng-cancel-drag"))
+	                    );
+	                };
+	                /*
+	                 * When the element is clicked start the drag behaviour
+	                 * On touch devices as a small delay so as not to prevent native window scrolling
+	                 */
+	                var onpress = function(evt) {
+	                    if(! _dragEnabled)return;
+
+	                    if (isClickableElement(evt)) {
+	                        return;
+	                    }
+
+	                    if (evt.type == "mousedown" && evt.button != 0) {
+	                        // Do not start dragging on right-click
+	                        return;
+	                    }
+
+	                    if(_hasTouch){
+	                        cancelPress();
+	                        _pressTimer = setTimeout(function(){
+	                            cancelPress();
+	                            onlongpress(evt);
+	                        },100);
+	                        $document.on(_moveEvents, cancelPress);
+	                        $document.on(_releaseEvents, cancelPress);
+	                    }else{
+	                        onlongpress(evt);
+	                    }
+
+	                };
+
+	                var cancelPress = function() {
+	                    clearTimeout(_pressTimer);
+	                    $document.off(_moveEvents, cancelPress);
+	                    $document.off(_releaseEvents, cancelPress);
+	                };
+
+	                var onlongpress = function(evt) {
+	                    if(! _dragEnabled)return;
+	                    evt.preventDefault();
+
+	                    offset = element[0].getBoundingClientRect();
+	                    if(allowTransform)
+	                        _dragOffset = offset;
+	                    else{
+	                        _dragOffset = {left:document.body.scrollLeft, top:document.body.scrollTop};
+	                    }
+
+
+	                    element.centerX = element[0].offsetWidth / 2;
+	                    element.centerY = element[0].offsetHeight / 2;
+
+	                    _mx = ngDraggable.inputEvent(evt).pageX;//ngDraggable.getEventProp(evt, 'pageX');
+	                    _my = ngDraggable.inputEvent(evt).pageY;//ngDraggable.getEventProp(evt, 'pageY');
+	                    _mrx = _mx - offset.left;
+	                    _mry = _my - offset.top;
+	                    if (_centerAnchor) {
+	                        _tx = _mx - element.centerX - $window.pageXOffset;
+	                        _ty = _my - element.centerY - $window.pageYOffset;
+	                    } else {
+	                        _tx = _mx - _mrx - $window.pageXOffset;
+	                        _ty = _my - _mry - $window.pageYOffset;
+	                    }
+
+	                    $document.on(_moveEvents, onmove);
+	                    $document.on(_releaseEvents, onrelease);
+	                    // This event is used to receive manually triggered mouse move events
+	                    // jqLite unfortunately only supports triggerHandler(...)
+	                    // See http://api.jquery.com/triggerHandler/
+	                    // _deregisterRootMoveListener = $rootScope.$on('draggable:_triggerHandlerMove', onmove);
+	                    _deregisterRootMoveListener = $rootScope.$on('draggable:_triggerHandlerMove', function(event, origEvent) {
+	                        onmove(origEvent);
+	                    });
+	                };
+
+	                var onmove = function (evt) {
+	                    if (!_dragEnabled)return;
+	                    evt.preventDefault();
+
+	                    if (!element.hasClass('dragging')) {
+	                        _data = getDragData(scope);
+	                        element.addClass('dragging');
+	                        $rootScope.$broadcast('draggable:start', {x:_mx, y:_my, tx:_tx, ty:_ty, event:evt, element:element, data:_data});
+
+	                        if (onDragStartCallback ){
+	                            scope.$apply(function () {
+	                                onDragStartCallback(scope, {$data: _data, $event: evt});
+	                            });
+	                        }
+	                    }
+
+	                    _mx = ngDraggable.inputEvent(evt).pageX;//ngDraggable.getEventProp(evt, 'pageX');
+	                    _my = ngDraggable.inputEvent(evt).pageY;//ngDraggable.getEventProp(evt, 'pageY');
+
+	                    if (_centerAnchor) {
+	                        _tx = _mx - element.centerX - _dragOffset.left;
+	                        _ty = _my - element.centerY - _dragOffset.top;
+	                    } else {
+	                        _tx = _mx - _mrx - _dragOffset.left;
+	                        _ty = _my - _mry - _dragOffset.top;
+	                    }
+
+	                    moveElement(_tx, _ty);
+
+	                    $rootScope.$broadcast('draggable:move', { x: _mx, y: _my, tx: _tx, ty: _ty, event: evt, element: element, data: _data, uid: _myid, dragOffset: _dragOffset });
+	                };
+
+	                var onrelease = function(evt) {
+	                    if (!_dragEnabled)
+	                        return;
+	                    evt.preventDefault();
+	                    $rootScope.$broadcast('draggable:end', {x:_mx, y:_my, tx:_tx, ty:_ty, event:evt, element:element, data:_data, callback:onDragComplete, uid: _myid});
+	                    element.removeClass('dragging');
+	                    element.parent().find('.drag-enter').removeClass('drag-enter');
+	                    reset();
+	                    $document.off(_moveEvents, onmove);
+	                    $document.off(_releaseEvents, onrelease);
+
+	                    if (onDragStopCallback ){
+	                        scope.$apply(function () {
+	                            onDragStopCallback(scope, {$data: _data, $event: evt});
+	                        });
+	                    }
+
+	                    _deregisterRootMoveListener();
+	                };
+
+	                var onDragComplete = function(evt) {
+
+
+	                    if (!onDragSuccessCallback )return;
+
+	                    scope.$apply(function () {
+	                        onDragSuccessCallback(scope, {$data: _data, $event: evt});
+	                    });
+	                };
+
+	                var reset = function() {
+	                    if(allowTransform)
+	                        element.css({transform:'', 'z-index':'', '-webkit-transform':'', '-ms-transform':''});
+	                    else
+	                        element.css({'position':'',top:'',left:''});
+	                };
+
+	                var moveElement = function (x, y) {
+	                    if(allowTransform) {
+	                        element.css({
+	                            transform: 'matrix3d(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, ' + x + ', ' + y + ', 0, 1)',
+	                            'z-index': 99999,
+	                            '-webkit-transform': 'matrix3d(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, ' + x + ', ' + y + ', 0, 1)',
+	                            '-ms-transform': 'matrix(1, 0, 0, 1, ' + x + ', ' + y + ')'
+	                        });
+	                    }else{
+	                        element.css({'left':x+'px','top':y+'px', 'position':'fixed'});
+	                    }
+	                };
+	                initialize();
+	            }
+	        };
+	    }])
+
+	    .directive('ngDrop', ['$parse', '$timeout', '$window', '$document', 'ngDraggable', function ($parse, $timeout, $window, $document, ngDraggable) {
+	        return {
+	            restrict: 'A',
+	            link: function (scope, element, attrs) {
+	                scope.value = attrs.ngDrop;
+	                scope.isTouching = false;
+
+	                var _lastDropTouch=null;
+
+	                var _myid = scope.$id;
+
+	                var _dropEnabled=false;
+
+	                var onDropCallback = $parse(attrs.ngDropSuccess);// || function(){};
+
+	                var onDragStartCallback = $parse(attrs.ngDragStart);
+	                var onDragStopCallback = $parse(attrs.ngDragStop);
+	                var onDragMoveCallback = $parse(attrs.ngDragMove);
+
+	                var initialize = function () {
+	                    toggleListeners(true);
+	                };
+
+	                var toggleListeners = function (enable) {
+	                    // remove listeners
+
+	                    if (!enable)return;
+	                    // add listeners.
+	                    scope.$watch(attrs.ngDrop, onEnableChange);
+	                    scope.$on('$destroy', onDestroy);
+	                    scope.$on('draggable:start', onDragStart);
+	                    scope.$on('draggable:move', onDragMove);
+	                    scope.$on('draggable:end', onDragEnd);
+	                };
+
+	                var onDestroy = function (enable) {
+	                    toggleListeners(false);
+	                };
+	                var onEnableChange = function (newVal, oldVal) {
+	                    _dropEnabled=newVal;
+	                };
+	                var onDragStart = function(evt, obj) {
+	                    if(! _dropEnabled)return;
+	                    isTouching(obj.x,obj.y,obj.element);
+
+	                    if (attrs.ngDragStart) {
+	                        $timeout(function(){
+	                            onDragStartCallback(scope, {$data: obj.data, $event: obj});
+	                        });
+	                    }
+	                };
+	                var onDragMove = function(evt, obj) {
+	                    if(! _dropEnabled)return;
+	                    isTouching(obj.x,obj.y,obj.element);
+
+	                    if (attrs.ngDragMove) {
+	                        $timeout(function(){
+	                            onDragMoveCallback(scope, {$data: obj.data, $event: obj});
+	                        });
+	                    }
+	                };
+
+	                var onDragEnd = function (evt, obj) {
+
+	                    // don't listen to drop events if this is the element being dragged
+	                    // only update the styles and return
+	                    if (!_dropEnabled || _myid === obj.uid) {
+	                        updateDragStyles(false, obj.element);
+	                        return;
+	                    }
+	                    if (isTouching(obj.x, obj.y, obj.element)) {
+	                        // call the ngDraggable ngDragSuccess element callback
+	                        if(obj.callback){
+	                            obj.callback(obj);
+	                        }
+
+	                        if (attrs.ngDropSuccess) {
+	                            $timeout(function(){
+	                                onDropCallback(scope, {$data: obj.data, $event: obj, $target: scope.$eval(scope.value)});
+	                            });
+	                        }
+	                    }
+
+	                    if (attrs.ngDragStop) {
+	                        $timeout(function(){
+	                            onDragStopCallback(scope, {$data: obj.data, $event: obj});
+	                        });
+	                    }
+
+	                    updateDragStyles(false, obj.element);
+	                };
+
+	                var isTouching = function(mouseX, mouseY, dragElement) {
+	                    var touching= hitTest(mouseX, mouseY);
+	                    scope.isTouching = touching;
+	                    if(touching){
+	                        _lastDropTouch = element;
+	                    }
+	                    updateDragStyles(touching, dragElement);
+	                    return touching;
+	                };
+
+	                var updateDragStyles = function(touching, dragElement) {
+	                    if(touching){
+	                        element.addClass('drag-enter');
+	                        dragElement.addClass('drag-over');
+	                    }else if(_lastDropTouch == element){
+	                        _lastDropTouch=null;
+	                        element.removeClass('drag-enter');
+	                        dragElement.removeClass('drag-over');
+	                    }
+	                };
+
+	                var hitTest = function(x, y) {
+	                    var bounds = element[0].getBoundingClientRect();// ngDraggable.getPrivOffset(element);
+	                    x -= $document[0].body.scrollLeft + $document[0].documentElement.scrollLeft;
+	                    y -= $document[0].body.scrollTop + $document[0].documentElement.scrollTop;
+	                    return  x >= bounds.left
+	                        && x <= bounds.right
+	                        && y <= bounds.bottom
+	                        && y >= bounds.top;
+	                };
+
+	                initialize();
+	            }
+	        };
+	    }])
+	    .directive('ngDragClone', ['$parse', '$timeout', 'ngDraggable', function ($parse, $timeout, ngDraggable) {
+	        return {
+	            restrict: 'A',
+	            link: function (scope, element, attrs) {
+	                var img, _allowClone=true;
+	                var _dragOffset = null;
+	                scope.clonedData = {};
+	                var initialize = function () {
+
+	                    img = element.find('img');
+	                    element.attr('draggable', 'false');
+	                    img.attr('draggable', 'false');
+	                    reset();
+	                    toggleListeners(true);
+	                };
+
+
+	                var toggleListeners = function (enable) {
+	                    // remove listeners
+
+	                    if (!enable)return;
+	                    // add listeners.
+	                    scope.$on('draggable:start', onDragStart);
+	                    scope.$on('draggable:move', onDragMove);
+	                    scope.$on('draggable:end', onDragEnd);
+	                    preventContextMenu();
+
+	                };
+	                var preventContextMenu = function() {
+	                    //  element.off('mousedown touchstart touchmove touchend touchcancel', absorbEvent_);
+	                    img.off('mousedown touchstart touchmove touchend touchcancel', absorbEvent_);
+	                    //  element.on('mousedown touchstart touchmove touchend touchcancel', absorbEvent_);
+	                    img.on('mousedown touchstart touchmove touchend touchcancel', absorbEvent_);
+	                };
+	                var onDragStart = function(evt, obj, elm) {
+	                    _allowClone=true;
+	                    if(angular.isDefined(obj.data.allowClone)){
+	                        _allowClone=obj.data.allowClone;
+	                    }
+	                    if(_allowClone) {
+	                        scope.$apply(function () {
+	                            scope.clonedData = obj.data;
+	                        });
+	                        element.css('width', obj.element[0].offsetWidth);
+	                        element.css('height', obj.element[0].offsetHeight);
+
+	                        moveElement(obj.tx, obj.ty);
+	                    }
+
+	                };
+	                var onDragMove = function(evt, obj) {
+	                    if(_allowClone) {
+
+	                        _tx = obj.tx + obj.dragOffset.left;
+	                        _ty = obj.ty + obj.dragOffset.top;
+
+	                        moveElement(_tx, _ty);
+	                    }
+	                };
+	                var onDragEnd = function(evt, obj) {
+	                    //moveElement(obj.tx,obj.ty);
+	                    if(_allowClone) {
+	                        reset();
+	                    }
+	                };
+
+	                var reset = function() {
+	                    element.css({left:0,top:0, position:'fixed', 'z-index':-1, visibility:'hidden'});
+	                };
+	                var moveElement = function(x,y) {
+	                    element.css({
+	                        transform: 'matrix3d(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, '+x+', '+y+', 0, 1)', 'z-index': 99999, 'visibility': 'visible',
+	                        '-webkit-transform': 'matrix3d(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, '+x+', '+y+', 0, 1)',
+	                        '-ms-transform': 'matrix(1, 0, 0, 1, '+x+', '+y+')'
+	                        //,margin: '0'  don't monkey with the margin,
+	                    });
+	                };
+
+	                var absorbEvent_ = function (event) {
+	                    var e = event;//.originalEvent;
+	                    e.preventDefault && e.preventDefault();
+	                    e.stopPropagation && e.stopPropagation();
+	                    e.cancelBubble = true;
+	                    e.returnValue = false;
+	                    return false;
+	                };
+
+	                initialize();
+	            }
+	        };
+	    }])
+	    .directive('ngPreventDrag', ['$parse', '$timeout', function ($parse, $timeout) {
+	        return {
+	            restrict: 'A',
+	            link: function (scope, element, attrs) {
+	                var initialize = function () {
+
+	                    element.attr('draggable', 'false');
+	                    toggleListeners(true);
+	                };
+
+
+	                var toggleListeners = function (enable) {
+	                    // remove listeners
+
+	                    if (!enable)return;
+	                    // add listeners.
+	                    element.on('mousedown touchstart touchmove touchend touchcancel', absorbEvent_);
+	                };
+
+
+	                var absorbEvent_ = function (event) {
+	                    var e = event.originalEvent;
+	                    e.preventDefault && e.preventDefault();
+	                    e.stopPropagation && e.stopPropagation();
+	                    e.cancelBubble = true;
+	                    e.returnValue = false;
+	                    return false;
+	                };
+
+	                initialize();
+	            }
+	        };
+	    }])
+	    .directive('ngCancelDrag', [function () {
+	        return {
+	            restrict: 'A',
+	            link: function (scope, element, attrs) {
+	                element.find('*').attr('ng-cancel-drag', 'ng-cancel-drag');
+	            }
+	        };
+	    }])
+	    .directive('ngDragScroll', ['$window', '$interval', '$timeout', '$document', '$rootScope', function($window, $interval, $timeout, $document, $rootScope) {
+	        return {
+	            restrict: 'A',
+	            link: function(scope, element, attrs) {
+	                var intervalPromise = null;
+	                var lastMouseEvent = null;
+
+	                var config = {
+	                    verticalScroll: attrs.verticalScroll || true,
+	                    horizontalScroll: attrs.horizontalScroll || true,
+	                    activationDistance: attrs.activationDistance || 75,
+	                    scrollDistance: attrs.scrollDistance || 15
+	                };
+
+
+	                var reqAnimFrame = (function() {
+	                    return window.requestAnimationFrame ||
+	                        window.webkitRequestAnimationFrame ||
+	                        window.mozRequestAnimationFrame ||
+	                        window.oRequestAnimationFrame ||
+	                        window.msRequestAnimationFrame ||
+	                        function( /* function FrameRequestCallback */ callback, /* DOMElement Element */ element ) {
+	                            window.setTimeout(callback, 1000 / 60);
+	                        };
+	                })();
+
+	                var animationIsOn = false;
+	                var createInterval = function() {
+	                    animationIsOn = true;
+
+	                    function nextFrame(callback) {
+	                        var args = Array.prototype.slice.call(arguments);
+	                        if(animationIsOn) {
+	                            reqAnimFrame(function () {
+	                                $rootScope.$apply(function () {
+	                                    callback.apply(null, args);
+	                                    nextFrame(callback);
+	                                });
+	                            })
+	                        }
+	                    }
+
+	                    nextFrame(function() {
+	                        if (!lastMouseEvent) return;
+
+	                        var viewportWidth = Math.max(document.documentElement.clientWidth, window.innerWidth || 0);
+	                        var viewportHeight = Math.max(document.documentElement.clientHeight, window.innerHeight || 0);
+
+	                        var scrollX = 0;
+	                        var scrollY = 0;
+
+	                        if (config.horizontalScroll) {
+	                            // If horizontal scrolling is active.
+	                            if (lastMouseEvent.clientX < config.activationDistance) {
+	                                // If the mouse is on the left of the viewport within the activation distance.
+	                                scrollX = -config.scrollDistance;
+	                            }
+	                            else if (lastMouseEvent.clientX > viewportWidth - config.activationDistance) {
+	                                // If the mouse is on the right of the viewport within the activation distance.
+	                                scrollX = config.scrollDistance;
+	                            }
+	                        }
+
+	                        if (config.verticalScroll) {
+	                            // If vertical scrolling is active.
+	                            if (lastMouseEvent.clientY < config.activationDistance) {
+	                                // If the mouse is on the top of the viewport within the activation distance.
+	                                scrollY = -config.scrollDistance;
+	                            }
+	                            else if (lastMouseEvent.clientY > viewportHeight - config.activationDistance) {
+	                                // If the mouse is on the bottom of the viewport within the activation distance.
+	                                scrollY = config.scrollDistance;
+	                            }
+	                        }
+
+
+
+	                        if (scrollX !== 0 || scrollY !== 0) {
+	                            // Record the current scroll position.
+	                            var currentScrollLeft = ($window.pageXOffset || $document[0].documentElement.scrollLeft);
+	                            var currentScrollTop = ($window.pageYOffset || $document[0].documentElement.scrollTop);
+
+	                            // Remove the transformation from the element, scroll the window by the scroll distance
+	                            // record how far we scrolled, then reapply the element transformation.
+	                            var elementTransform = element.css('transform');
+	                            element.css('transform', 'initial');
+
+	                            $window.scrollBy(scrollX, scrollY);
+
+	                            var horizontalScrollAmount = ($window.pageXOffset || $document[0].documentElement.scrollLeft) - currentScrollLeft;
+	                            var verticalScrollAmount =  ($window.pageYOffset || $document[0].documentElement.scrollTop) - currentScrollTop;
+
+	                            element.css('transform', elementTransform);
+
+	                            lastMouseEvent.pageX += horizontalScrollAmount;
+	                            lastMouseEvent.pageY += verticalScrollAmount;
+
+	                            $rootScope.$emit('draggable:_triggerHandlerMove', lastMouseEvent);
+	                        }
+
+	                    });
+	                };
+
+	                var clearInterval = function() {
+	                    animationIsOn = false;
+	                };
+
+	                scope.$on('draggable:start', function(event, obj) {
+	                    // Ignore this event if it's not for this element.
+	                    if (obj.element[0] !== element[0]) return;
+
+	                    if (!animationIsOn) createInterval();
+	                });
+
+	                scope.$on('draggable:end', function(event, obj) {
+	                    // Ignore this event if it's not for this element.
+	                    if (obj.element[0] !== element[0]) return;
+
+	                    if (animationIsOn) clearInterval();
+	                });
+
+	                scope.$on('draggable:move', function(event, obj) {
+	                    // Ignore this event if it's not for this element.
+	                    if (obj.element[0] !== element[0]) return;
+
+	                    lastMouseEvent = obj.event;
+	                });
+	            }
+	        };
+	    }]);
+
+
+/***/ },
+/* 15 */
 /***/ function(module, exports, __webpack_require__) {
 
 	    // Template HTML
-	var template = __webpack_require__( 15 );
-	__webpack_require__( 16 );
+	var template = __webpack_require__( 16 );
+	__webpack_require__( 17 );
 
 	// Définition du composant
 	module.exports = function(moduleAngular) {
 
-	    var proxyNF = __webpack_require__( 18 )(moduleAngular);
+	    var proxyNF = __webpack_require__( 19 )(moduleAngular);
 
 	    var controller = function( proxyNF, $http, $mdDialog, $mdMedia ) {
 
@@ -59807,12 +60467,36 @@
 	        });
 	        };
 
+	        // Récupérer l'identifiant de l'infirmier dont l'onglet est sélectionné
+	        this.ongletInfirmierActif = "";
+	        this.getOngletInfirmier = function(id) {
+	            if(ctrl.ongletInfirmierActif.isUndefined) {
+	                console.log("pas encore");
+	            } else {
+	                ctrl.ongletInfirmierActif = id;
+	                console.log("onglet infirmier sélectionné", ctrl.ongletInfirmierActif);
+	            }
+	        }
+	        // Affecter un Infirmier en droppant un patient non affecté
+	        // dans la zone de l'infirmier !
+	        this.onDropPatient = function($data) {
+	            var affecterInfirmier ={
+	                "patient": "$data",
+	                "infirmier": "ctrl.ongletInfirmierActif"
+	            }
+	            proxyNF.affecterPatient(affecterInfirmier).then(
+	                function(){
+	                    console.log("cabinetMedical.js => drop de patient !");
+	                    ctrl.updateInfirmiers();
+	                });
+	        }
+
 	        // Actions sur un patient existant
 	        this.isOpen = false;
 	        this.modifierPatient = function(ev){
 	            var useFullScreen = ($mdMedia('sm') || $mdMedia('xs'));
 	            $mdDialog.show({
-	              template: __webpack_require__(19),
+	              template: __webpack_require__(20),
 	              parent: angular.element(document.body),
 	              targetEvent: ev,
 	              clickOutsideToClose:true,
@@ -59848,8 +60532,8 @@
 	    };
 
 
-	    __webpack_require__(20)(moduleAngular);
-	    __webpack_require__(24)(moduleAngular);
+	    __webpack_require__(21)(moduleAngular);
+	    __webpack_require__(25)(moduleAngular);
 	   // require("../patientMap/patientMap.js")(moduleAngular);
 
 
@@ -59865,20 +60549,20 @@
 	};
 
 /***/ },
-/* 15 */
+/* 16 */
 /***/ function(module, exports) {
 
-	module.exports = "<!-- <md-toolbar class=\"titre\">{{ $ctrl.titre }}</md-toolbar> -->\n\n<!-- Afficher la liste des patients pour chaque Infirmier -->\n<md-content class=\"md-whiteframe-2dp\" ng-cloak>\n\n\n  <md-toolbar >\n    <div class=\"md-toolbar-tools\">\n\n      <h2>\n        <span>Gestion des infimiers </span>\n      </h2>\n      <span flex></span>\n\n      <md-button ng-click= \"$ctrl.showFormulaire()\" class=\"md-icon-button\" aria-label=\"More\">\n        <md-icon md-svg-icon=\"../../images/svg/design/ic_expand_more_48px.svg\"></md-icon>\n      </md-button>\n\n    </div>\n  </md-toolbar>\n\n  <md-content class=\"md-padding\">\n      <md-tabs md-selected=\"selectedIndex\" md-border-bottom md-autoselect>\n        \t<md-tab\n              ng-repeat=\"inf in $ctrl.data.objectInfirmiers\"\n              ng-disabled=\"tab.disabled\"\n              label=\"{{inf.nom | uppercase}} {{inf.prenom}}\">\n          \t<md-content\n              class=\"md-padding\",\"demo-tab\",\"tab-content\"\n              layout=\"row\">\n            \t\t<md-list\n                  ng-repeat=\"patientX in inf.patients\"\n                  layout=\"row\">\n                      <md-content layout=\"column\">\n                        <!-- affiche un patient -->\n              \t\t\t\t\t<patient data=\"patientX\" layout-padding></patient>\n                        <!-- actions sur un patient -->\n                        <div class=\"lock-size\" layout=\"row\" layout-align=\"center center\">\n                          <md-fab-speed-dial\n                              md-direction=\"up\"\n                              ng-class=\"md-scale\"\n                              md-open=\"$ctrl.isOpen\">\n                            <md-fab-trigger>\n                              <md-button aria-label=\"menu\" class=\"md-fab md-warn\">\n                                <md-icon md-svg-src=\"img/icons/menu.svg\"></md-icon>\n                              </md-button>\n                            </md-fab-trigger>\n                            <md-fab-actions>\n                                <md-button\n                                  class=\"md-fab md-raised md-mini\"\n                                  ng-click=\"$ctrl.modifierPatient(ev)\"\n                                  type=\"submit\">\n                                  Modifier</md-button>\n                                <md-button\n                                  class=\"md-fab md-raised md-mini\"\n                                  ng-click=\"$ctrl.desaffecterPatient(patientX)\"\n                                  type=\"submit\">\n                                  Désaffecter</md-button>\n                                <md-button\n                                  class=\"md-fab md-raised md-mini\"\n                                  ng-click=\"$ctrl.supprimerPatient(patientX)\"\n                                  type=\"submit\">\n                                  Supprimer</md-button>\n                            </md-fab-actions>\n                          </md-fab-speed-dial>\n                        </div>\n                        <md-divider ng-if=\"!$last\"></md-divider>\n                      </md-content>\n            \t\t</md-list-item>\n  \t        </md-content>\n        \t</md-tab>\n      </md-tabs>\n  </md-content>\n  </br>\n\n\n<!-- Ajouter un patient au tableau -->\n  <md-toolbar >\n    <div class=\"md-toolbar-tools\">\n      <h2><span>Ajouter un patient </span></h2>\n      <span flex></span>\n      <md-button ng-click= \"$ctrl.showFormulaire()\" class=\"md-icon-button\" aria-label=\"More\">\n        \t<md-icon md-svg-icon=\"../../images/svg/design/ic_expand_more_48px.svg\"></md-icon>\n      </md-button>\n    </div>\n  </md-toolbar>\n  <md-content class=\"md-padding\" layout-align=\"center\">\n    <formulaire-new-patient\n      data=\"$ctrl.data\"\n      ng-show=\"$ctrl.formulaire == true\"\n      on-validation=\"$ctrl.updateInfirmiers()\"></formulaire-new-patient>\n  </md-content>\n  </br>\n\n\n<!-- Liste des patients restants de patient restant -->\n\t<md-toolbar >\n      <div class=\"md-toolbar-tools\">\n        <h2><span>Patients non affectés</span></h2>\n        <span flex></span>\n\n        <md-button ng-click= \"$ctrl.showPatientsRestants()\" class=\"md-icon-button\" aria-label=\"More\">\n          <md-icon md-svg-icon=\"../../images/svg/design/ic_expand_more_48px.svg\"></md-icon>\n        </md-button>\n\n      </div>\n    </md-toolbar>\n\n    <div ng-show=\"$ctrl.patientsRestants == true\">\n    \t<md-grid-list\n        md-cols-xs=\"1\" md-cols-sm=\"2\" md-cols-md=\"4\" md-cols-gt-md=\"6\"\n        md-row-height-gt-md=\"1:1\" md-row-height=\"2:2\"\n        md-gutter=\"12px\" md-gutter-gt-sm=\"8px\" >\n        \t<md-grid-tile class=\"md-whiteframe-2dp\" ng-repeat=\"patientY in $ctrl.data.objectPatients\" ng-if=\"patientY.infirmier == null\">\n    \t\t\t<patient data=\"patientY\"></patient>\n    \t\t</md-grid-tile>\n    \t</md-grid-list>\n    </div>\n\n\n</md-content>\n\n\n        <patient-map  data=\"$ctrl.data\"> </patient-map>\n        \n\n\n\n\n\n\n"
+	module.exports = "<!-- <md-toolbar class=\"titre\">{{ $ctrl.titre }}</md-toolbar> -->\r\n\r\n<!-- Afficher la liste des patients pour chaque Infirmier -->\r\n<div class=\"md-whiteframe-2dp\" ng-cloak>\r\n\r\n\r\n  <md-toolbar >\r\n    <div class=\"md-toolbar-tools\">\r\n\r\n      <h2>\r\n        <span>Gestion des infimiers </span>\r\n      </h2>\r\n      <span flex></span>\r\n\r\n      <md-button ng-click= \"$ctrl.showFormulaire()\" class=\"md-icon-button\" aria-label=\"More\">\r\n        <md-icon md-svg-icon=\"../../images/svg/design/ic_expand_more_48px.svg\"></md-icon>\r\n      </md-button>\r\n\r\n    </div>\r\n  </md-toolbar>\r\n\r\n  <md-content class=\"md-padding\">\r\n      <md-tabs md-selected=\"selectedIndex\" md-border-bottom md-autoselect>\r\n        \t<md-tab ng-repeat=\"inf in $ctrl.data.objectInfirmiers | orderBy:inf.nom\"\r\n                  ng-disabled=\"tab.disabled\"\r\n                  label=\"{{inf.nom | uppercase}} {{inf.prenom}}\"\r\n                  ng-click=\"$ctrl.getOngletInfirmier(inf.id)\">\r\n          \t<md-content class=\"demo-tab\",\"tab-content\"\r\n                        layout=\"row\"\r\n                        ng-drop=\"true\"\r\n                        ng-drop-success=\"onDropPatient($data)\">\r\n            \t\t<md-list  ng-repeat=\"patientX in inf.patients\"\r\n                          layout=\"row\">\r\n                      <md-content layout=\"row\"\r\n                                  ng-drag=\"true\"\r\n                                  ng-drag-data=\"obj\">\r\n\r\n                        <!-- affiche un patient -->\r\n              \t\t\t\t\t<patient data=\"patientX\" layout-padding></patient>\r\n\r\n                        <!-- actions sur un patient\r\n                        <div class=\"lock-size\" layout=\"row\" layout-align=\"center center\">\r\n                          <md-fab-speed-dial\r\n                              md-direction=\"up\"\r\n                              ng-class=\"md-scale\"\r\n                              md-open=\"$ctrl.isOpen\">\r\n                            <md-fab-trigger>\r\n                              <md-button aria-label=\"menu\" class=\"md-fab md-warn\">\r\n                                <md-icon md-svg-src=\"img/icons/menu.svg\"></md-icon>\r\n                              </md-button>\r\n                            </md-fab-trigger>\r\n                            <md-fab-actions>\r\n                                <md-button\r\n                                  class=\"md-fab md-raised md-mini\"\r\n                                  ng-click=\"$ctrl.modifierPatient(ev)\"\r\n                                  type=\"submit\">\r\n                                  Modifier</md-button>\r\n                                <md-button\r\n                                  class=\"md-fab md-raised md-mini\"\r\n                                  ng-click=\"$ctrl.desaffecterPatient(patientX)\"\r\n                                  type=\"submit\">\r\n                                  Désaffecter</md-button>\r\n                                <md-button\r\n                                  class=\"md-fab md-raised md-mini\"\r\n                                  ng-click=\"$ctrl.supprimerPatient(patientX)\"\r\n                                  type=\"submit\">\r\n                                  Supprimer</md-button>\r\n                            </md-fab-actions>\r\n                          </md-fab-speed-dial>\r\n                        </div> -->\r\n                        <md-divider ng-if=\"!$last\"></md-divider>\r\n                      </md-content>\r\n            \t\t</md-list-item>\r\n  \t        </md-content>\r\n        \t</md-tab>\r\n      </md-tabs>\r\n  </md-content>\r\n  </br>\r\n\r\n\r\n<!-- Ajouter un patient au tableau -->\r\n  <md-toolbar >\r\n    <div class=\"md-toolbar-tools\">\r\n      <h2><span>Ajouter un patient </span></h2>\r\n      <span flex></span>\r\n      <md-button ng-click= \"$ctrl.showFormulaire()\" class=\"md-icon-button\" aria-label=\"More\">\r\n        \t<md-icon md-svg-icon=\"../../images/svg/design/ic_expand_more_48px.svg\"></md-icon>\r\n      </md-button>\r\n    </div>\r\n  </md-toolbar>\r\n  <md-content class=\"md-padding\" layout-align=\"center\">\r\n    <formulaire-new-patient data=\"$ctrl.data\"\r\n                            ng-show=\"$ctrl.formulaire == true\"\r\n                            on-validation=\"$ctrl.updateInfirmiers()\">\r\n    </formulaire-new-patient>\r\n  </md-content>\r\n  </br>\r\n\r\n\r\n<!-- Liste des patients restants de patient restant -->\r\n\t<md-toolbar >\r\n      <div class=\"md-toolbar-tools\">\r\n        <h2><span>Patients non affectés</span></h2>\r\n        <span flex></span>\r\n\r\n        <md-button ng-click= \"$ctrl.showPatientsRestants()\" class=\"md-icon-button\" aria-label=\"More\">\r\n          <md-icon md-svg-icon=\"../../images/svg/design/ic_expand_more_48px.svg\"></md-icon>\r\n        </md-button>\r\n\r\n      </div>\r\n    </md-toolbar>\r\n\r\n    <div class=\"superman\" ng-show=\"$ctrl.patientsRestants == true\" layout=\"row\">\r\n\r\n          <div  class=\"md-whiteframe-2dp\"\r\n                ng-repeat=\"patientY in $ctrl.data.objectPatients\"\r\n                ng-if=\"patientY.infirmier == null\"\r\n                ng-drag=\"true\"\r\n                ng-drag-data=\"patientY.id\"\r\n                ng-drag-handle=\"true\">\r\n            <md-content>\r\n    \t\t\t   <patient data=\"patientY\"></patient>\r\n            </md-content>\r\n          </div>\r\n    </div>\r\n\r\n\r\n</div>\r\n\r\n\r\n\r\n\r\n\r\n\r\n<!-- \r\n        <patient-map  data=\"$ctrl.data\"> </patient-map>\r\n\r\n -->\r\n\r\n\r\n\r\n\r\n\r\n"
 
 /***/ },
-/* 16 */
+/* 17 */
 /***/ function(module, exports) {
 
 	// removed by extract-text-webpack-plugin
 
 /***/ },
-/* 17 */,
-/* 18 */
+/* 18 */,
+/* 19 */
 /***/ function(module, exports) {
 
 		var proxyNF = function($http){
@@ -60078,23 +60762,23 @@
 			// });
 
 /***/ },
-/* 19 */
+/* 20 */
 /***/ function(module, exports) {
 
-	module.exports = "\n<form name=\"AjouterPatient\" novalidate ng-submit=\"\n\t\t\t\t\tAjouterPatient.$valid && $ctrl.submitPatient()\" id=\"popupContainer\">\n\t<md-input-container>\n        <label for=\"patientName\">Nom</label>\n        <input name=\"nom\" type=\"text\" ng-model=\"$ctrl.nouveauPatient.patientName\" required>\n        <div ng-messages=\"AjouterPatient.nom.$error\">\n            <div ng-message=\"required\">Name is required.</div>\n        </div>\n  \t</md-input-container>\n\n\t<md-input-container>\n\t    <label for=\"patientForname\">Prenom</label>\n\t    <input type=\"text\" ng-model=\"$ctrl.nouveauPatient.patientForname\">\n\t</md-input-container>\n\n\t<md-input-container>\n\t\t<label>Sexe</label>\n\t\t<md-select ng-model=\"$ctrl.nouveauPatient.patientSex\">\n\t\t\t<md-option ng-repeat=\"x in $ctrl.sexe\" ng-value=\"x.sexe\">\n\t\t\t{{ x.sexe }}\n\t\t\t</md-option>\n\t\t</md-select>\n\t</md-input-container>\n\n\t<md-input-container>\n\t    <label for=\"patientNumber\">N° de sécurité sociale</label>\n\t    <input name=\"social\" type=\"text\" ng-model=\"$ctrl.nouveauPatient.patientNumber\" ng-pattern=\"/^[0-9]{15}$/\" required>\n\t    <div ng-messages=\"AjouterPatient.social.$error\">\n\t        <div ng-message=\"pattern\",\"required\"> SSN composé de 15 chiffres </div>\n\t    </div>\n\t</md-input-container>\n\n\t<md-input-container>\n\t    <label for=\"patientBirthday\">Date de naissance</label>\n\t    <input type=\"text\" ng-model=\"$ctrl.nouveauPatient.patientBirthday\">\n\t</md-input-container>\n\n\t<md-input-container>\n\t    <label for=\"patientFloor\">Etage</label>\n\t    <input type=\"text\" ng-model=\"$ctrl.nouveauPatient.patientFloor\">\n\t</md-input-container>\n\n\t<md-input-container>\n\t    <label for=\"patientStreet\">Rue</label>\n\t    <input type=\"text\" ng-model=\"$ctrl.nouveauPatient.patientStreet\">\n\t</md-input-container>\n\n\t<md-input-container>\n\t    <label for=\"postalCode\">Code postal</label>\n\t    <input type=\"text\" ng-model=\"$ctrl.nouveauPatient.postalCode\">\n\t</md-input-container>\n\n\t<md-input-container>\n\t    <label for=\"patientCity\">Ville</label>\n\t    <input type=\"text\" ng-model=\"$ctrl.nouveauPatient.patientCity\">\n\t</md-input-container>\n\n\t</br>\n\n\t<md-checkbox ng-model=\"$ctrl.check\">\n\t\t Sélectionnez un infirmier\n\t</md-checkbox>\n\n\t<md-input-container ng-show=\"$ctrl.check == true\">\n\t\t<label>Sélectionnez un infirmier</label>\n\t\t<md-select ng-model=\"$ctrl.affecterInfirmier.infirmier\">\n\t\t\t<md-option ng-repeat=\"inf in $ctrl.data.objectInfirmiers\" ng-value=\"inf.id\">\n\t\t\t{{ inf.nom | uppercase }} {{ inf.prenom }}\n\t\t\t</md-option>\n\t\t</md-select>\n\t</md-input-container>\n\n\t<md-button ng-disabled=\"AjouterPatient.nom.$invalid || AjouterPatient.social.$invalid\" class=\"md-raised md-primary\" ng-click=\"$ctrl.showAlert($event)\" type=\"submit\">Submit</md-button>\n\n\n</form>\n"
+	module.exports = "\r\n<form name=\"AjouterPatient\" novalidate ng-submit=\"\r\n\t\t\t\t\tAjouterPatient.$valid && $ctrl.submitPatient()\" id=\"popupContainer\">\r\n\t<md-input-container>\r\n        <label for=\"patientName\">Nom</label>\r\n        <input name=\"nom\" type=\"text\" ng-model=\"$ctrl.nouveauPatient.patientName\" required>\r\n        <div ng-messages=\"AjouterPatient.nom.$error\">\r\n            <div ng-message=\"required\">Name is required.</div>\r\n        </div>\r\n  \t</md-input-container>\r\n\r\n\t<md-input-container>\r\n\t    <label for=\"patientForname\">Prenom</label>\r\n\t    <input type=\"text\" ng-model=\"$ctrl.nouveauPatient.patientForname\">\r\n\t</md-input-container>\r\n\r\n\t<md-input-container>\r\n\t\t<label>Sexe</label>\r\n\t\t<md-select ng-model=\"$ctrl.nouveauPatient.patientSex\">\r\n\t\t\t<md-option ng-repeat=\"x in $ctrl.sexe\" ng-value=\"x.sexe\">\r\n\t\t\t{{ x.sexe }}\r\n\t\t\t</md-option>\r\n\t\t</md-select>\r\n\t</md-input-container>\r\n\r\n\t<md-input-container>\r\n\t    <label for=\"patientNumber\">N° de sécurité sociale</label>\r\n\t    <input name=\"social\" type=\"text\" ng-model=\"$ctrl.nouveauPatient.patientNumber\" ng-pattern=\"/^[0-9]{15}$/\" required>\r\n\t    <div ng-messages=\"AjouterPatient.social.$error\">\r\n\t        <div ng-message=\"pattern\",\"required\"> SSN composé de 15 chiffres </div>\r\n\t    </div>\r\n\t</md-input-container>\r\n\r\n\t<md-input-container>\r\n\t    <label for=\"patientBirthday\">Date de naissance</label>\r\n\t    <input type=\"text\" ng-model=\"$ctrl.nouveauPatient.patientBirthday\">\r\n\t</md-input-container>\r\n\r\n\t<md-input-container>\r\n\t    <label for=\"patientFloor\">Etage</label>\r\n\t    <input type=\"text\" ng-model=\"$ctrl.nouveauPatient.patientFloor\">\r\n\t</md-input-container>\r\n\r\n\t<md-input-container>\r\n\t    <label for=\"patientStreet\">Rue</label>\r\n\t    <input type=\"text\" ng-model=\"$ctrl.nouveauPatient.patientStreet\">\r\n\t</md-input-container>\r\n\r\n\t<md-input-container>\r\n\t    <label for=\"postalCode\">Code postal</label>\r\n\t    <input type=\"text\" ng-model=\"$ctrl.nouveauPatient.postalCode\">\r\n\t</md-input-container>\r\n\r\n\t<md-input-container>\r\n\t    <label for=\"patientCity\">Ville</label>\r\n\t    <input type=\"text\" ng-model=\"$ctrl.nouveauPatient.patientCity\">\r\n\t</md-input-container>\r\n\r\n\t</br>\r\n\r\n\t<md-checkbox ng-model=\"$ctrl.check\">\r\n\t\t Sélectionnez un infirmier\r\n\t</md-checkbox>\r\n\r\n\t<md-input-container ng-show=\"$ctrl.check == true\">\r\n\t\t<label>Sélectionnez un infirmier</label>\r\n\t\t<md-select ng-model=\"$ctrl.affecterInfirmier.infirmier\">\r\n\t\t\t<md-option ng-repeat=\"inf in $ctrl.data.objectInfirmiers\" ng-value=\"inf.id\">\r\n\t\t\t{{ inf.nom | uppercase }} {{ inf.prenom }}\r\n\t\t\t</md-option>\r\n\t\t</md-select>\r\n\t</md-input-container>\r\n\r\n\t<md-button ng-disabled=\"AjouterPatient.nom.$invalid || AjouterPatient.social.$invalid\" class=\"md-raised md-primary\" ng-click=\"$ctrl.showAlert($event)\" type=\"submit\">Submit</md-button>\r\n\r\n\r\n</form>\r\n"
 
 /***/ },
-/* 20 */
+/* 21 */
 /***/ function(module, exports, __webpack_require__) {
 
 	// Template HTML
-	var template = __webpack_require__( 21 );
-	__webpack_require__( 22 );
+	var template = __webpack_require__( 22 );
+	__webpack_require__( 23 );
 
 	// Définition du composant
 	module.exports = function(moduleAngular) {
 
-	    var proxyNF = __webpack_require__( 18 )(moduleAngular);
+	    var proxyNF = __webpack_require__( 19 )(moduleAngular);
 
 	    var ctrlInfirmiers = function( ) {
 
@@ -60111,35 +60795,35 @@
 	}
 
 /***/ },
-/* 21 */
+/* 22 */
 /***/ function(module, exports) {
 
-	module.exports = "<md-list-item class=\"md-3-line\" ng-click=\"null\">\n\t<img ng-src=\"../../{{ $ctrl.data.photo }}\" class=\"md-avatar\" alt=\"{{$ctrl.data.nom}}\">\n\t<div class=\"md-list-item-text\">\n\t\t  <h3>{{$ctrl.data.nom | uppercase}} {{$ctrl.data.prenom}}</h3>\n\t\t  <h4>{{$ctrl.data.id}}</h4>\n\t\t  <p>Infirmier</p>\n\t</div>\n\t<md-divider md-inset ng-if=\"!$last\"></md-divider>\n</md-list-item>"
+	module.exports = "<md-list-item class=\"md-3-line\" ng-click=\"null\">\r\n\t<img ng-src=\"../../{{ $ctrl.data.photo }}\" class=\"md-avatar\" alt=\"{{$ctrl.data.nom}}\">\r\n\t<div class=\"md-list-item-text\">\r\n\t\t  <h3>{{$ctrl.data.nom | uppercase}} {{$ctrl.data.prenom}}</h3>\r\n\t\t  <h4>{{$ctrl.data.id}}</h4>\r\n\t\t  <p>Infirmier</p>\r\n\t</div>\r\n\t<md-divider md-inset ng-if=\"!$last\"></md-divider>\r\n</md-list-item>"
 
 /***/ },
-/* 22 */
+/* 23 */
 /***/ function(module, exports) {
 
 	// removed by extract-text-webpack-plugin
 
 /***/ },
-/* 23 */,
-/* 24 */
+/* 24 */,
+/* 25 */
 /***/ function(module, exports, __webpack_require__) {
 
 	// Template HTML
-	var template = __webpack_require__( 25 );
-	var formulaire = __webpack_require__( 19)
-	var patientMapTemplate = __webpack_require__(26);
+	var template = __webpack_require__( 26 );
+	var formulaire = __webpack_require__( 20)
+	var patientMapTemplate = __webpack_require__(27);
 
 
 
 	// Définition du composant
 	module.exports = function(moduleAngular) {
-	    __webpack_require__( 27 );
-	    var mapsapi = __webpack_require__( 29 )( 'AIzaSyDsF_LpIDzCDd0ieieyl2gfJ2xMW3u27CY' );
+	    __webpack_require__( 28 );
+	    var mapsapi = __webpack_require__( 30 )( 'AIzaSyDsF_LpIDzCDd0ieieyl2gfJ2xMW3u27CY' );
 
-	    var proxyNF = __webpack_require__(18)(moduleAngular);
+	    var proxyNF = __webpack_require__(19)(moduleAngular);
 
 	    var ctrlPatients = function( $http, proxyNF, $mdDialog, $mdMedia) {
 
@@ -60318,32 +61002,32 @@
 	};
 
 /***/ },
-/* 25 */
-/***/ function(module, exports) {
-
-	module.exports = "<table flex layout=\"column\">\n\t<tr>\n\t\t<td>{{$ctrl.data.nom | uppercase}} {{$ctrl.data.prenom}}</td>\n\t</tr>\n\t<tr>\n\t\t<td>{{ $ctrl.data.id }}</td>\n\t</tr>\n\t<tr>\n\t\t<td ng-repeat=\"ad in $ctrl.data.adresse\">\n\t\t\t{{ ad.rue }}</br>\n\t\t\t{{ ad.ville }}</br>\n\t\t\t{{ ad.codePostal }}</br>\n\t\t</td>\n\t</tr>\n</table>\n"
-
-/***/ },
 /* 26 */
 /***/ function(module, exports) {
 
-	module.exports = "\n<h3> Manges mes mortssssss </h3>\n    <div id=\"map\"> </div>\n\n"
+	module.exports = "<table layout=\"column\">\r\n\t<tr>\r\n\t\t<td>{{$ctrl.data.nom | uppercase}} {{$ctrl.data.prenom}}</td>\r\n\t</tr>\r\n\t<tr>\r\n\t\t<td>{{ $ctrl.data.id }}</td>\r\n\t</tr>\r\n\t<tr>\r\n\t\t<td ng-repeat=\"ad in $ctrl.data.adresse\">\r\n\t\t\t{{ ad.rue }}</br>\r\n\t\t\t{{ ad.ville }}</br>\r\n\t\t\t{{ ad.codePostal }}</br>\r\n\t\t</td>\r\n\t</tr>\r\n</table>\r\n"
 
 /***/ },
 /* 27 */
 /***/ function(module, exports) {
 
+	module.exports = "\r\n<h3> Manges mes mortssssss </h3>\r\n    <div id=\"map\"> </div>\r\n\r\n"
+
+/***/ },
+/* 28 */
+/***/ function(module, exports) {
+
 	// removed by extract-text-webpack-plugin
 
 /***/ },
-/* 28 */,
-/* 29 */
+/* 29 */,
+/* 30 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/** @module google-maps-api */
 
-	var script = __webpack_require__( 30 ),
-	  promise = __webpack_require__( 31 );
+	var script = __webpack_require__( 31 ),
+	  promise = __webpack_require__( 32 );
 
 	var maps = null,
 	  callBacks = [],
@@ -60456,7 +61140,7 @@
 
 
 /***/ },
-/* 30 */
+/* 31 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
@@ -60585,23 +61269,23 @@
 
 
 /***/ },
-/* 31 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-
-	module.exports = __webpack_require__(32)
-	__webpack_require__(36)
-	__webpack_require__(37)
-	__webpack_require__(38)
-
-/***/ },
 /* 32 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	var asap = __webpack_require__(33)
+	module.exports = __webpack_require__(33)
+	__webpack_require__(37)
+	__webpack_require__(38)
+	__webpack_require__(39)
+
+/***/ },
+/* 33 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	var asap = __webpack_require__(34)
 
 	module.exports = Promise;
 	function Promise(fn) {
@@ -60707,7 +61391,7 @@
 
 
 /***/ },
-/* 33 */
+/* 34 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(process, setImmediate) {
@@ -60824,10 +61508,10 @@
 	module.exports = asap;
 
 
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(34), __webpack_require__(35).setImmediate))
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(35), __webpack_require__(36).setImmediate))
 
 /***/ },
-/* 34 */
+/* 35 */
 /***/ function(module, exports) {
 
 	// shim for using process in browser
@@ -60924,10 +61608,10 @@
 
 
 /***/ },
-/* 35 */
+/* 36 */
 /***/ function(module, exports, __webpack_require__) {
 
-	/* WEBPACK VAR INJECTION */(function(setImmediate, clearImmediate) {var nextTick = __webpack_require__(34).nextTick;
+	/* WEBPACK VAR INJECTION */(function(setImmediate, clearImmediate) {var nextTick = __webpack_require__(35).nextTick;
 	var apply = Function.prototype.apply;
 	var slice = Array.prototype.slice;
 	var immediateIds = {};
@@ -61003,16 +61687,16 @@
 	exports.clearImmediate = typeof clearImmediate === "function" ? clearImmediate : function(id) {
 	  delete immediateIds[id];
 	};
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(35).setImmediate, __webpack_require__(35).clearImmediate))
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(36).setImmediate, __webpack_require__(36).clearImmediate))
 
 /***/ },
-/* 36 */
+/* 37 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	var Promise = __webpack_require__(32)
-	var asap = __webpack_require__(33)
+	var Promise = __webpack_require__(33)
+	var asap = __webpack_require__(34)
 
 	module.exports = Promise
 	Promise.prototype.done = function (onFulfilled, onRejected) {
@@ -61025,15 +61709,15 @@
 	}
 
 /***/ },
-/* 37 */
+/* 38 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
 	//This file contains the ES6 extensions to the core Promises/A+ API
 
-	var Promise = __webpack_require__(32)
-	var asap = __webpack_require__(33)
+	var Promise = __webpack_require__(33)
+	var asap = __webpack_require__(34)
 
 	module.exports = Promise
 
@@ -61139,15 +61823,15 @@
 
 
 /***/ },
-/* 38 */
+/* 39 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
 	//This file contains then/promise specific extensions that are only useful for node.js interop
 
-	var Promise = __webpack_require__(32)
-	var asap = __webpack_require__(33)
+	var Promise = __webpack_require__(33)
+	var asap = __webpack_require__(34)
 
 	module.exports = Promise
 

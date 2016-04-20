@@ -27,6 +27,30 @@ module.exports = function(moduleAngular) {
         });
         };
 
+        // Récupérer l'identifiant de l'infirmier dont l'onglet est sélectionné
+        this.ongletInfirmierActif = "";
+        this.getOngletInfirmier = function(id) {
+            if(ctrl.ongletInfirmierActif.isUndefined) {
+                console.log("pas encore");
+            } else {
+                ctrl.ongletInfirmierActif = id;
+                console.log("onglet infirmier sélectionné", ctrl.ongletInfirmierActif);
+            }
+        }
+        // Affecter un Infirmier en droppant un patient non affecté
+        // dans la zone de l'infirmier !
+        this.onDropPatient = function($data) {
+            var affecterInfirmier ={
+                "patient": "$data",
+                "infirmier": "ctrl.ongletInfirmierActif"
+            }
+            proxyNF.affecterPatient(affecterInfirmier).then(
+                function(){
+                    console.log("cabinetMedical.js => drop de patient !");
+                    ctrl.updateInfirmiers();
+                });
+        }
+
         // Actions sur un patient existant
         this.isOpen = false;
         this.modifierPatient = function(ev){

@@ -1,7 +1,7 @@
 <!-- <md-toolbar class="titre">{{ $ctrl.titre }}</md-toolbar> -->
 
 <!-- Afficher la liste des patients pour chaque Infirmier -->
-<md-content class="md-whiteframe-2dp" ng-cloak>
+<div class="md-whiteframe-2dp" ng-cloak>
 
 
   <md-toolbar >
@@ -21,20 +21,24 @@
 
   <md-content class="md-padding">
       <md-tabs md-selected="selectedIndex" md-border-bottom md-autoselect>
-        	<md-tab
-              ng-repeat="inf in $ctrl.data.objectInfirmiers"
-              ng-disabled="tab.disabled"
-              label="{{inf.nom | uppercase}} {{inf.prenom}}">
-          	<md-content
-              class="md-padding","demo-tab","tab-content"
-              layout="row">
-            		<md-list
-                  ng-repeat="patientX in inf.patients"
-                  layout="row">
-                      <md-content layout="column">
+        	<md-tab ng-repeat="inf in $ctrl.data.objectInfirmiers | orderBy:inf.nom"
+                  ng-disabled="tab.disabled"
+                  label="{{inf.nom | uppercase}} {{inf.prenom}}"
+                  ng-click="$ctrl.getOngletInfirmier(inf.id)">
+          	<md-content class="demo-tab","tab-content"
+                        layout="row"
+                        ng-drop="true"
+                        ng-drop-success="onDropPatient($data)">
+            		<md-list  ng-repeat="patientX in inf.patients"
+                          layout="row">
+                      <md-content layout="row"
+                                  ng-drag="true"
+                                  ng-drag-data="obj">
+
                         <!-- affiche un patient -->
               					<patient data="patientX" layout-padding></patient>
-                        <!-- actions sur un patient -->
+
+                        <!-- actions sur un patient
                         <div class="lock-size" layout="row" layout-align="center center">
                           <md-fab-speed-dial
                               md-direction="up"
@@ -63,7 +67,7 @@
                                   Supprimer</md-button>
                             </md-fab-actions>
                           </md-fab-speed-dial>
-                        </div>
+                        </div> -->
                         <md-divider ng-if="!$last"></md-divider>
                       </md-content>
             		</md-list-item>
@@ -85,10 +89,10 @@
     </div>
   </md-toolbar>
   <md-content class="md-padding" layout-align="center">
-    <formulaire-new-patient
-      data="$ctrl.data"
-      ng-show="$ctrl.formulaire == true"
-      on-validation="$ctrl.updateInfirmiers()"></formulaire-new-patient>
+    <formulaire-new-patient data="$ctrl.data"
+                            ng-show="$ctrl.formulaire == true"
+                            on-validation="$ctrl.updateInfirmiers()">
+    </formulaire-new-patient>
   </md-content>
   </br>
 
@@ -106,24 +110,32 @@
       </div>
     </md-toolbar>
 
-    <div ng-show="$ctrl.patientsRestants == true">
-    	<md-grid-list
-        md-cols-xs="1" md-cols-sm="2" md-cols-md="4" md-cols-gt-md="6"
-        md-row-height-gt-md="1:1" md-row-height="2:2"
-        md-gutter="12px" md-gutter-gt-sm="8px" >
-        	<md-grid-tile class="md-whiteframe-2dp" ng-repeat="patientY in $ctrl.data.objectPatients" ng-if="patientY.infirmier == null">
-    			<patient data="patientY"></patient>
-    		</md-grid-tile>
-    	</md-grid-list>
+    <div class="superman" ng-show="$ctrl.patientsRestants == true" layout="row">
+
+          <div  class="md-whiteframe-2dp"
+                ng-repeat="patientY in $ctrl.data.objectPatients"
+                ng-if="patientY.infirmier == null"
+                ng-drag="true"
+                ng-drag-data="patientY.id"
+                ng-drag-handle="true">
+            <md-content>
+    			   <patient data="patientY"></patient>
+            </md-content>
+          </div>
     </div>
 
 
-</md-content>
+</div>
 
 
+
+
+
+
+<!-- 
         <patient-map  data="$ctrl.data"> </patient-map>
-        
 
+ -->
 
 
 
