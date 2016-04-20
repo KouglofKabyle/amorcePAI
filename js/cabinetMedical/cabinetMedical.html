@@ -28,12 +28,13 @@
           	<md-content class="demo-tab","tab-content"
                         layout="row"
                         ng-drop="true"
-                        ng-drop-success="onDropPatient($data)">
+                        ng-drop-success="$ctrl.onDropPatient($data)">
             		<md-list  ng-repeat="patientX in inf.patients"
                           layout="row">
-                      <md-content layout="row"
+                      <!-- <md-content layout="row"
                                   ng-drag="true"
-                                  ng-drag-data="obj">
+                                  ng-drag-data="obj"> -->
+                      <md-content layout="row">
 
                         <!-- affiche un patient -->
               					<patient data="patientX" layout-padding></patient>
@@ -59,15 +60,14 @@
                                   class="md-fab md-raised md-mini"
                                   ng-click="$ctrl.desaffecterPatient(patientX)"
                                   type="submit">
-                                  Désaffecter</md-button>
+                                  Désaffecter</md-button> -->
                                 <md-button
-                                  class="md-fab md-raised md-mini"
-                                  ng-click="$ctrl.supprimerPatient(patientX)"
-                                  type="submit">
+                                  class="md-primary md-raised"
+                                  ng-click="$ctrl.supprimerPatient(patientX.id)">
                                   Supprimer</md-button>
-                            </md-fab-actions>
-                          </md-fab-speed-dial>
-                        </div> -->
+                            <!-- </md-fab-actions>
+                                                      </md-fab-speed-dial>
+                                                    </div> -->
                         <md-divider ng-if="!$last"></md-divider>
                       </md-content>
             		</md-list-item>
@@ -132,7 +132,7 @@
 
 
 
-<!-- 
+<!--
         <patient-map  data="$ctrl.data"> </patient-map>
 
  -->

@@ -213,7 +213,60 @@ function init(port, applicationServerIP, applicationServerPort) {
 				 saveXML(doc, res);
 				}
 			);
-    
+
+    // Suppression de patient
+    app.post('/removePatient'
+            , function (req, response) {
+
+                console.log("/removePatient, \nreq.body:\n\t", request.body, "\n_______________________");
+
+                // le numéro du patient qu'on recherche
+                var numero = req.body.patientNumber;
+                //var patientNumber = patientToDelete.ssid;
+
+                // verifier qu'il y ait bien un numero de sécurité sociale
+                if (typeof numero === "undefined") {
+                    console.error("400 - Patient number invalid: \n", numero);
+                    response.writeHead(400);
+                    response.write("Patient number invalid: \n", numer);
+                    response.end();
+                    return;
+                }
+
+                // récuperer tous les patients du document
+                var patients = doc.getElementsByTagName("patient");
+
+                // rechercher le patient ayant le même numero de sécurité sociale
+                var patientFound = false;
+                for (var i = 0; i < patients.length; i++) {
+
+                    var p = patients[i];
+                    var pnum = p.getElementsByTagName("numero").textContent;
+
+                    // puis le retirer du DOM
+                    if (pnum === numero) {
+                        doc.getElementsByTagName("patients")[i].removeChild(p);
+                        patientFound = true;
+                        break;
+                    }
+                }
+
+                // pas de patient retiré, erreur
+                if (patientFound === false) {
+                    console.error("400 - Patient not found: \n", numero);
+                    response.writeHead(400);
+                    response.write("Patient not found: \n", numero);
+                    response.end( );
+                    return;
+                }
+
+                // ecrire le document
+                saveXML(doc, response);
+
+            }
+    );
+
+
     // Define HTTP ressource POST /affectation, associate a patient with a nurse
     app.post( '/affectation'
 	      , function(req, res) {

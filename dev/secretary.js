@@ -60477,18 +60477,36 @@
 	                console.log("onglet infirmier sélectionné", ctrl.ongletInfirmierActif);
 	            }
 	        }
+
 	        // Affecter un Infirmier en droppant un patient non affecté
 	        // dans la zone de l'infirmier !
 	        this.onDropPatient = function($data) {
-	            var affecterInfirmier ={
-	                "patient": "$data",
-	                "infirmier": "ctrl.ongletInfirmierActif"
+	            ctrl.affecterInfirmier ={
+	                "patient": $data,
+	                "infirmier": ctrl.ongletInfirmierActif
 	            }
-	            proxyNF.affecterPatient(affecterInfirmier).then(
+	            proxyNF.affecterPatient(ctrl.affecterInfirmier).then(
 	                function(){
 	                    console.log("cabinetMedical.js => drop de patient !");
 	                    ctrl.updateInfirmiers();
 	                });
+	        }
+
+	        // Supprimer un patient
+	        this.supprimerPatient = function(id) {
+	            var identifiant = {
+	                'patientNumber': id
+	            }
+	            var confirm = $mdDialog.confirm()
+	              .title('Voulez-vous définitivement supprimer ce patient?')
+	              .ariaLabel('Suppression patient')
+	              .ok('supprimer')
+	              .cancel('annuler');
+	            $mdDialog.show(confirm).then(function() {
+	                proxyNF.supprimerPatient(identifiant).then( function(){
+	                    ctrl.updateInfirmiers();
+	                });
+	            });
 	        }
 
 	        // Actions sur un patient existant
@@ -60552,7 +60570,7 @@
 /* 16 */
 /***/ function(module, exports) {
 
-	module.exports = "<!-- <md-toolbar class=\"titre\">{{ $ctrl.titre }}</md-toolbar> -->\r\n\r\n<!-- Afficher la liste des patients pour chaque Infirmier -->\r\n<div class=\"md-whiteframe-2dp\" ng-cloak>\r\n\r\n\r\n  <md-toolbar >\r\n    <div class=\"md-toolbar-tools\">\r\n\r\n      <h2>\r\n        <span>Gestion des infimiers </span>\r\n      </h2>\r\n      <span flex></span>\r\n\r\n      <md-button ng-click= \"$ctrl.showFormulaire()\" class=\"md-icon-button\" aria-label=\"More\">\r\n        <md-icon md-svg-icon=\"../../images/svg/design/ic_expand_more_48px.svg\"></md-icon>\r\n      </md-button>\r\n\r\n    </div>\r\n  </md-toolbar>\r\n\r\n  <md-content class=\"md-padding\">\r\n      <md-tabs md-selected=\"selectedIndex\" md-border-bottom md-autoselect>\r\n        \t<md-tab ng-repeat=\"inf in $ctrl.data.objectInfirmiers | orderBy:inf.nom\"\r\n                  ng-disabled=\"tab.disabled\"\r\n                  label=\"{{inf.nom | uppercase}} {{inf.prenom}}\"\r\n                  ng-click=\"$ctrl.getOngletInfirmier(inf.id)\">\r\n          \t<md-content class=\"demo-tab\",\"tab-content\"\r\n                        layout=\"row\"\r\n                        ng-drop=\"true\"\r\n                        ng-drop-success=\"onDropPatient($data)\">\r\n            \t\t<md-list  ng-repeat=\"patientX in inf.patients\"\r\n                          layout=\"row\">\r\n                      <md-content layout=\"row\"\r\n                                  ng-drag=\"true\"\r\n                                  ng-drag-data=\"obj\">\r\n\r\n                        <!-- affiche un patient -->\r\n              \t\t\t\t\t<patient data=\"patientX\" layout-padding></patient>\r\n\r\n                        <!-- actions sur un patient\r\n                        <div class=\"lock-size\" layout=\"row\" layout-align=\"center center\">\r\n                          <md-fab-speed-dial\r\n                              md-direction=\"up\"\r\n                              ng-class=\"md-scale\"\r\n                              md-open=\"$ctrl.isOpen\">\r\n                            <md-fab-trigger>\r\n                              <md-button aria-label=\"menu\" class=\"md-fab md-warn\">\r\n                                <md-icon md-svg-src=\"img/icons/menu.svg\"></md-icon>\r\n                              </md-button>\r\n                            </md-fab-trigger>\r\n                            <md-fab-actions>\r\n                                <md-button\r\n                                  class=\"md-fab md-raised md-mini\"\r\n                                  ng-click=\"$ctrl.modifierPatient(ev)\"\r\n                                  type=\"submit\">\r\n                                  Modifier</md-button>\r\n                                <md-button\r\n                                  class=\"md-fab md-raised md-mini\"\r\n                                  ng-click=\"$ctrl.desaffecterPatient(patientX)\"\r\n                                  type=\"submit\">\r\n                                  Désaffecter</md-button>\r\n                                <md-button\r\n                                  class=\"md-fab md-raised md-mini\"\r\n                                  ng-click=\"$ctrl.supprimerPatient(patientX)\"\r\n                                  type=\"submit\">\r\n                                  Supprimer</md-button>\r\n                            </md-fab-actions>\r\n                          </md-fab-speed-dial>\r\n                        </div> -->\r\n                        <md-divider ng-if=\"!$last\"></md-divider>\r\n                      </md-content>\r\n            \t\t</md-list-item>\r\n  \t        </md-content>\r\n        \t</md-tab>\r\n      </md-tabs>\r\n  </md-content>\r\n  </br>\r\n\r\n\r\n<!-- Ajouter un patient au tableau -->\r\n  <md-toolbar >\r\n    <div class=\"md-toolbar-tools\">\r\n      <h2><span>Ajouter un patient </span></h2>\r\n      <span flex></span>\r\n      <md-button ng-click= \"$ctrl.showFormulaire()\" class=\"md-icon-button\" aria-label=\"More\">\r\n        \t<md-icon md-svg-icon=\"../../images/svg/design/ic_expand_more_48px.svg\"></md-icon>\r\n      </md-button>\r\n    </div>\r\n  </md-toolbar>\r\n  <md-content class=\"md-padding\" layout-align=\"center\">\r\n    <formulaire-new-patient data=\"$ctrl.data\"\r\n                            ng-show=\"$ctrl.formulaire == true\"\r\n                            on-validation=\"$ctrl.updateInfirmiers()\">\r\n    </formulaire-new-patient>\r\n  </md-content>\r\n  </br>\r\n\r\n\r\n<!-- Liste des patients restants de patient restant -->\r\n\t<md-toolbar >\r\n      <div class=\"md-toolbar-tools\">\r\n        <h2><span>Patients non affectés</span></h2>\r\n        <span flex></span>\r\n\r\n        <md-button ng-click= \"$ctrl.showPatientsRestants()\" class=\"md-icon-button\" aria-label=\"More\">\r\n          <md-icon md-svg-icon=\"../../images/svg/design/ic_expand_more_48px.svg\"></md-icon>\r\n        </md-button>\r\n\r\n      </div>\r\n    </md-toolbar>\r\n\r\n    <div class=\"superman\" ng-show=\"$ctrl.patientsRestants == true\" layout=\"row\">\r\n\r\n          <div  class=\"md-whiteframe-2dp\"\r\n                ng-repeat=\"patientY in $ctrl.data.objectPatients\"\r\n                ng-if=\"patientY.infirmier == null\"\r\n                ng-drag=\"true\"\r\n                ng-drag-data=\"patientY.id\"\r\n                ng-drag-handle=\"true\">\r\n            <md-content>\r\n    \t\t\t   <patient data=\"patientY\"></patient>\r\n            </md-content>\r\n          </div>\r\n    </div>\r\n\r\n\r\n</div>\r\n\r\n\r\n\r\n\r\n\r\n\r\n<!-- \r\n        <patient-map  data=\"$ctrl.data\"> </patient-map>\r\n\r\n -->\r\n\r\n\r\n\r\n\r\n\r\n"
+	module.exports = "<!-- <md-toolbar class=\"titre\">{{ $ctrl.titre }}</md-toolbar> -->\r\n\r\n<!-- Afficher la liste des patients pour chaque Infirmier -->\r\n<div class=\"md-whiteframe-2dp\" ng-cloak>\r\n\r\n\r\n  <md-toolbar >\r\n    <div class=\"md-toolbar-tools\">\r\n\r\n      <h2>\r\n        <span>Gestion des infimiers </span>\r\n      </h2>\r\n      <span flex></span>\r\n\r\n      <md-button ng-click= \"$ctrl.showFormulaire()\" class=\"md-icon-button\" aria-label=\"More\">\r\n        <md-icon md-svg-icon=\"../../images/svg/design/ic_expand_more_48px.svg\"></md-icon>\r\n      </md-button>\r\n\r\n    </div>\r\n  </md-toolbar>\r\n\r\n  <md-content class=\"md-padding\">\r\n      <md-tabs md-selected=\"selectedIndex\" md-border-bottom md-autoselect>\r\n        \t<md-tab ng-repeat=\"inf in $ctrl.data.objectInfirmiers | orderBy:inf.nom\"\r\n                  ng-disabled=\"tab.disabled\"\r\n                  label=\"{{inf.nom | uppercase}} {{inf.prenom}}\"\r\n                  ng-click=\"$ctrl.getOngletInfirmier(inf.id)\">\r\n          \t<md-content class=\"demo-tab\",\"tab-content\"\r\n                        layout=\"row\"\r\n                        ng-drop=\"true\"\r\n                        ng-drop-success=\"$ctrl.onDropPatient($data)\">\r\n            \t\t<md-list  ng-repeat=\"patientX in inf.patients\"\r\n                          layout=\"row\">\r\n                      <!-- <md-content layout=\"row\"\r\n                                  ng-drag=\"true\"\r\n                                  ng-drag-data=\"obj\"> -->\r\n                      <md-content layout=\"row\">\r\n\r\n                        <!-- affiche un patient -->\r\n              \t\t\t\t\t<patient data=\"patientX\" layout-padding></patient>\r\n\r\n                        <!-- actions sur un patient\r\n                        <div class=\"lock-size\" layout=\"row\" layout-align=\"center center\">\r\n                          <md-fab-speed-dial\r\n                              md-direction=\"up\"\r\n                              ng-class=\"md-scale\"\r\n                              md-open=\"$ctrl.isOpen\">\r\n                            <md-fab-trigger>\r\n                              <md-button aria-label=\"menu\" class=\"md-fab md-warn\">\r\n                                <md-icon md-svg-src=\"img/icons/menu.svg\"></md-icon>\r\n                              </md-button>\r\n                            </md-fab-trigger>\r\n                            <md-fab-actions>\r\n                                <md-button\r\n                                  class=\"md-fab md-raised md-mini\"\r\n                                  ng-click=\"$ctrl.modifierPatient(ev)\"\r\n                                  type=\"submit\">\r\n                                  Modifier</md-button>\r\n                                <md-button\r\n                                  class=\"md-fab md-raised md-mini\"\r\n                                  ng-click=\"$ctrl.desaffecterPatient(patientX)\"\r\n                                  type=\"submit\">\r\n                                  Désaffecter</md-button> -->\r\n                                <md-button\r\n                                  class=\"md-primary md-raised\"\r\n                                  ng-click=\"$ctrl.supprimerPatient(patientX.id)\">\r\n                                  Supprimer</md-button>\r\n                            <!-- </md-fab-actions>\r\n                                                      </md-fab-speed-dial>\r\n                                                    </div> -->\r\n                        <md-divider ng-if=\"!$last\"></md-divider>\r\n                      </md-content>\r\n            \t\t</md-list-item>\r\n  \t        </md-content>\r\n        \t</md-tab>\r\n      </md-tabs>\r\n  </md-content>\r\n  </br>\r\n\r\n\r\n<!-- Ajouter un patient au tableau -->\r\n  <md-toolbar >\r\n    <div class=\"md-toolbar-tools\">\r\n      <h2><span>Ajouter un patient </span></h2>\r\n      <span flex></span>\r\n      <md-button ng-click= \"$ctrl.showFormulaire()\" class=\"md-icon-button\" aria-label=\"More\">\r\n        \t<md-icon md-svg-icon=\"../../images/svg/design/ic_expand_more_48px.svg\"></md-icon>\r\n      </md-button>\r\n    </div>\r\n  </md-toolbar>\r\n  <md-content class=\"md-padding\" layout-align=\"center\">\r\n    <formulaire-new-patient data=\"$ctrl.data\"\r\n                            ng-show=\"$ctrl.formulaire == true\"\r\n                            on-validation=\"$ctrl.updateInfirmiers()\">\r\n    </formulaire-new-patient>\r\n  </md-content>\r\n  </br>\r\n\r\n\r\n<!-- Liste des patients restants de patient restant -->\r\n\t<md-toolbar >\r\n      <div class=\"md-toolbar-tools\">\r\n        <h2><span>Patients non affectés</span></h2>\r\n        <span flex></span>\r\n\r\n        <md-button ng-click= \"$ctrl.showPatientsRestants()\" class=\"md-icon-button\" aria-label=\"More\">\r\n          <md-icon md-svg-icon=\"../../images/svg/design/ic_expand_more_48px.svg\"></md-icon>\r\n        </md-button>\r\n\r\n      </div>\r\n    </md-toolbar>\r\n\r\n    <div class=\"superman\" ng-show=\"$ctrl.patientsRestants == true\" layout=\"row\">\r\n\r\n          <div  class=\"md-whiteframe-2dp\"\r\n                ng-repeat=\"patientY in $ctrl.data.objectPatients\"\r\n                ng-if=\"patientY.infirmier == null\"\r\n                ng-drag=\"true\"\r\n                ng-drag-data=\"patientY.id\"\r\n                ng-drag-handle=\"true\">\r\n            <md-content>\r\n    \t\t\t   <patient data=\"patientY\"></patient>\r\n            </md-content>\r\n          </div>\r\n    </div>\r\n\r\n\r\n</div>\r\n\r\n\r\n\r\n\r\n\r\n\r\n<!--\r\n        <patient-map  data=\"$ctrl.data\"> </patient-map>\r\n\r\n -->\r\n\r\n\r\n\r\n\r\n\r\n"
 
 /***/ },
 /* 17 */
@@ -60669,10 +60687,27 @@
 	                },
 	            // error callback
 	            function(response){
-	                console.log("proxy.js => Nouveau patient non ajouté");
+	                console.log("proxy.js => Erreur : nouveau patient non ajouté");
 	                }
 	            );
 	        };
+
+	    // Suppression d'un patient
+	    this.supprimerPatient = function(id) {
+	    	return $http({
+	    		method: 'POST',
+	    		url: "/removePatient",
+	    		data: id,
+	    		header: {'Content-Type': 'application/x-www-form-urlencoded'}
+	    	}).then(
+	    		function(response){
+	    			console.log("proxy.js => Jambonneau ! Patient supprimé");
+	    		},
+	    		function(response){
+	    			console.log("proxy.js => Erreur : patient non supprimé")
+	    		}
+	    	);
+	    }
 
 	    // Affecte à un patient un id d'infirmier
 	    this.affecterPatient = function(affecterInfirmier) {

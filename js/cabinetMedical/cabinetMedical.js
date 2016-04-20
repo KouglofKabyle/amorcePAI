@@ -37,18 +37,36 @@ module.exports = function(moduleAngular) {
                 console.log("onglet infirmier sélectionné", ctrl.ongletInfirmierActif);
             }
         }
+
         // Affecter un Infirmier en droppant un patient non affecté
         // dans la zone de l'infirmier !
         this.onDropPatient = function($data) {
-            var affecterInfirmier ={
-                "patient": "$data",
-                "infirmier": "ctrl.ongletInfirmierActif"
+            ctrl.affecterInfirmier ={
+                "patient": $data,
+                "infirmier": ctrl.ongletInfirmierActif
             }
-            proxyNF.affecterPatient(affecterInfirmier).then(
+            proxyNF.affecterPatient(ctrl.affecterInfirmier).then(
                 function(){
                     console.log("cabinetMedical.js => drop de patient !");
                     ctrl.updateInfirmiers();
                 });
+        }
+
+        // Supprimer un patient
+        this.supprimerPatient = function(id) {
+            var identifiant = {
+                'patientNumber': id
+            }
+            var confirm = $mdDialog.confirm()
+              .title('Voulez-vous définitivement supprimer ce patient?')
+              .ariaLabel('Suppression patient')
+              .ok('supprimer')
+              .cancel('annuler');
+            $mdDialog.show(confirm).then(function() {
+                proxyNF.supprimerPatient(identifiant).then( function(){
+                    ctrl.updateInfirmiers();
+                });
+            });
         }
 
         // Actions sur un patient existant

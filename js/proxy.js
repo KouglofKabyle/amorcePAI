@@ -102,10 +102,27 @@
                 },
             // error callback
             function(response){
-                console.log("proxy.js => Nouveau patient non ajouté");
+                console.log("proxy.js => Erreur : nouveau patient non ajouté");
                 }
             );
         };
+
+    // Suppression d'un patient
+    this.supprimerPatient = function(id) {
+    	return $http({
+    		method: 'POST',
+    		url: "/removePatient",
+    		data: id,
+    		header: {'Content-Type': 'application/x-www-form-urlencoded'}
+    	}).then(
+    		function(response){
+    			console.log("proxy.js => Jambonneau ! Patient supprimé");
+    		},
+    		function(response){
+    			console.log("proxy.js => Erreur : patient non supprimé")
+    		}
+    	);
+    }
 
     // Affecte à un patient un id d'infirmier
     this.affecterPatient = function(affecterInfirmier) {
