@@ -103,7 +103,7 @@
                 -->
 			<visite date="2014-12-08" intervenant="001">
 				<acte id="101"/>
-				<acte id="104"/>               
+				<acte id="104"/>
 			</visite>
 
 		</patient>
@@ -149,10 +149,79 @@
 			</visite>
 
 		</patient>
-		<patient><nom>Casimir</nom><prenom/><numero>123456789012353</numero><sexe/><naissance/><visite date="2014-12-08" intervenant=""/><adresse><etage/><numero/><rue/><ville/><codePostal/></adresse></patient>
-		<patient><nom>Captain</nom><prenom>MORRIS</prenom><numero>123456789012337</numero><sexe/><naissance/><visite date="2014-12-08" intervenant="001"/><adresse><etage/><numero/><rue/><ville/><codePostal/></adresse></patient>
-		<patient><nom>CAPTAIN</nom><prenom>Flame</prenom><numero>123456789012973</numero><sexe/><naissance/><visite date="2014-12-08" intervenant=""/><adresse><etage/><numero/><rue/><ville/><codePostal/></adresse></patient>
-		<patient><nom>CAPTAIN</nom><prenom/>Tsubasa<numero>123456789012874</numero><sexe/><naissance/><visite date="2014-12-08" intervenant="002"/><adresse><etage/><numero/><rue/><ville/><codePostal/></adresse></patient>
-<patient><nom>CAPTAIN</nom><prenom>Crochet</prenom><numero>123456789012761</numero><sexe></sexe><naissance></naissance><visite date="2014-12-08" intervenant="002"/><adresse><etage></etage><numero></numero><rue></rue><ville></ville><codePostal></codePostal></adresse></patient>
-</patients>
+		<patient>
+			<nom>Casimir</nom>
+			<prenom/>
+			<numero>123456789012353</numero>
+			<sexe/>
+			<naissance/>
+			<visite date="2014-12-08" intervenant=""/>
+			<adresse>
+				<etage/>
+				<numero/>
+				<rue/>
+				<ville/>
+				<codePostal/>
+			</adresse>
+		</patient>
+		<patient>
+			<nom>Captain</nom>
+			<prenom>MORRIS</prenom>
+			<numero>123456789012337</numero>
+			<sexe/>
+			<naissance/>
+			<visite date="2014-12-08" intervenant="001"/>
+			<adresse>
+				<etage/>
+				<numero/>
+				<rue/>
+				<ville/>
+				<codePostal/>
+			</adresse>
+		</patient>
+		<patient>
+			<nom>CAPTAIN</nom>
+			<prenom>Flame</prenom>
+			<numero>123456789012973</numero>
+			<sexe/><naissance/>
+			<visite date="2014-12-08" intervenant=""/>
+			<adresse>
+				<etage/>
+				<numero/>
+				<rue/>
+				<ville/>
+				<codePostal/>
+			</adresse>
+		</patient>
+		<patient>
+			<nom>CAPTAIN</nom>
+			<prenom>Crochet</prenom>
+			<numero>123456789012761</numero>
+			<sexe/>
+			<naissance/>
+			<visite date="2014-12-08" intervenant="002"/>
+			<adresse>
+				<etage/>
+				<numero/>
+				<rue/>
+				<ville/>
+				<codePostal/>
+			</adresse>
+		</patient>
+		<patient>
+			<nom>CAPTAIN</nom>
+			<prenom>Haddock</prenom>
+			<numero>123456789012765</numero>
+			<sexe/>
+			<naissance/>
+			<visite date="2014-12-08" intervenant="002"/>
+			<adresse>
+				<etage/>
+				<numero/>
+				<rue/>
+				<ville/>
+				<codePostal/>
+			</adresse>
+		</patient>
+	</patients>
 </cabinet>

@@ -329,12 +329,14 @@ function init(port, applicationServerIP, applicationServerPort) {
                     // puis masquer les visites du DOM
                     if (pnum === patientNumber) {
 
-                    	var visites = p.getElementsByTagName('visite');
+                    	var visites = p.getElementsByTagName("visite")[0];
+                    	visites.removeAttribute("intervenant");
 
-						var anciennesVisites = doc.createElement('anciennesVisites');
+                    	/*var visites = p.getElementsByTagName("visite")[0];
+						var anciennesVisites = doc.createElement("anciennesVisites");
+						anciennesVisites.innerHTML = visites.innerHTML;
 
-						visites.parentNode.insertBefore(anciennesVisites, visites);
-						visites.parentNode.removeChild(visites);
+						visites.parentNode.replaceChild(anciennesVisites, visites);*/
 
                         patientFound = true;
                         break;
