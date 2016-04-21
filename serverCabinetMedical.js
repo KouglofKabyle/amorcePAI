@@ -82,7 +82,6 @@ function init(port, applicationServerIP, applicationServerPort) {
 	.use( bodyParser.json() )								// Add a parser for json HTTP request
 	.use( multer({ dest: './uploads/'}).array() )					// Add a parser for file transmission
 	.listen(port) ;											// HTTP server listen to this TCP port
-    
 
 	app.disable('etag');
     // Define HTTP ressource GET /
@@ -214,21 +213,23 @@ function init(port, applicationServerIP, applicationServerPort) {
 				}
 			);
 
+	
+
     // Suppression de patient
     app.post('/removePatient'
             , function (req, response) {
 
-                console.log("/removePatient, \nreq.body:\n\t", request.body, "\n_______________________");
+                console.log("/removePatient, \nreq.body:\n\t", req.body, "\n_______________________");
 
                 // le numéro du patient qu'on recherche
-                var numero = req.body.patientNumber;
+                var patientNumber = req.body.patientNumber;
                 //var patientNumber = patientToDelete.ssid;
 
                 // verifier qu'il y ait bien un numero de sécurité sociale
-                if (typeof numero === "undefined") {
-                    console.error("400 - Patient number invalid: \n", numero);
+                if (typeof patientNumber === "undefined") {
+                    console.error("500 - Patient number invalid: \n", patientNumber);
                     response.writeHead(400);
-                    response.write("Patient number invalid: \n", numer);
+                    response.write("Patient number invalid: \n", patientNumber);
                     response.end();
                     return;
                 }
@@ -241,11 +242,11 @@ function init(port, applicationServerIP, applicationServerPort) {
                 for (var i = 0; i < patients.length; i++) {
 
                     var p = patients[i];
-                    var pnum = p.getElementsByTagName("numero").textContent;
+                    var pnum = p.getElementsByTagName("numero")[0].textContent;
 
                     // puis le retirer du DOM
-                    if (pnum === numero) {
-                        doc.getElementsByTagName("patients")[i].removeChild(p);
+                    if (pnum === patientNumber) {
+                        doc.getElementsByTagName("patients")[0].removeChild(p);
                         patientFound = true;
                         break;
                     }
@@ -253,9 +254,9 @@ function init(port, applicationServerIP, applicationServerPort) {
 
                 // pas de patient retiré, erreur
                 if (patientFound === false) {
-                    console.error("400 - Patient not found: \n", numero);
+                    console.error("400 - Patient not found: \n", patientNumber);
                     response.writeHead(400);
-                    response.write("Patient not found: \n", numero);
+                    response.write("Patient not found: \n", patientNumber);
                     response.end( );
                     return;
                 }
@@ -295,6 +296,65 @@ function init(port, applicationServerIP, applicationServerPort) {
 		  }
 	      }
 	    );
+
+	// Désaffecter un patient d'un infirmier
+    app.post('/desaffectation'
+            , function (req, response) {
+
+                console.log("/desaffectation, \nreq.body:\n\t", req.body, "\n_______________________");
+
+                // le numéro du patient qu'on recherche
+                var patientNumber = req.body.patientNumber;
+                //var patientNumber = patientToDelete.ssid;
+
+                // verifier qu'il y ait bien un numero de sécurité sociale
+                if (typeof patientNumber === "undefined") {
+                    console.error("500 - Patient number invalid: \n", patientNumber);
+                    response.writeHead(400);
+                    response.write("Patient number invalid: \n", patientNumber);
+                    response.end();
+                    return;
+                }
+
+                // récuperer tous les patients du document
+                var patients = doc.getElementsByTagName("patient");
+
+                // rechercher le patient ayant le même numero de sécurité sociale
+                var patientFound = false;
+                for (var i = 0; i < patients.length; i++) {
+
+                    var p = patients[i];
+                    var pnum = p.getElementsByTagName("numero")[0].textContent;
+
+                    // puis masquer les visites du DOM
+                    if (pnum === patientNumber) {
+
+                    	var visites = p.getElementsByTagName('visite');
+
+						var anciennesVisites = doc.createElement('anciennesVisites');
+
+						visites.parentNode.insertBefore(anciennesVisites, visites);
+						visites.parentNode.removeChild(visites);
+
+                        patientFound = true;
+                        break;
+                    }
+                }
+
+                // pas de patient retiré, erreur
+                if (patientFound === false) {
+                    console.error("400 - Patient not found: \n", patientNumber);
+                    response.writeHead(400);
+                    response.write("Patient not found: \n", patientNumber);
+                    response.end( );
+                    return;
+                }
+
+                // ecrire le document
+                saveXML(doc, response);
+
+            }
+    );
 
     // Define HTTP ressource POST /INFIRMIERE
    app.post( '/INFIRMIERE'

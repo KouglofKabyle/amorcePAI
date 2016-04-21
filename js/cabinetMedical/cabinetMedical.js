@@ -52,11 +52,29 @@ module.exports = function(moduleAngular) {
                 });
         }
 
+        // Désaffecter un patient
+        this.desaffecterPatient = function(id){
+            var identifiant = {
+                'patientNumber': id
+            };
+            var confirm = $mdDialog.confirm()
+              .title('Voulez-vous désaffecter ce patient?')
+              .ariaLabel('Désaffectation patient')
+              .ok('désaffecter')
+              .cancel('annuler');
+              $mdDialog.show(confirm).then( function(){
+                proxyNF.desaffecterPatient(identifiant)
+                    .then( function(){
+                        ctrl.updateInfirmiers();
+                    });
+              });
+        }
+
         // Supprimer un patient
         this.supprimerPatient = function(id) {
             var identifiant = {
                 'patientNumber': id
-            }
+            };
             var confirm = $mdDialog.confirm()
               .title('Voulez-vous définitivement supprimer ce patient?')
               .ariaLabel('Suppression patient')

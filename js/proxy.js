@@ -113,13 +113,13 @@
     		method: 'POST',
     		url: "/removePatient",
     		data: id,
-    		header: {'Content-Type': 'application/x-www-form-urlencoded'}
+    		header: {"Content-Type": "application/json"}
     	}).then(
     		function(response){
     			console.log("proxy.js => Jambonneau ! Patient supprimé");
     		},
     		function(response){
-    			console.log("proxy.js => Erreur : patient non supprimé")
+    			console.log("proxy.js => Erreur : patient non supprimé");
     		}
     	);
     }
@@ -135,10 +135,27 @@
         		console.log("proxy.js => Par la saucisse de Morteau ! Nouveau patient affecté");
         	},
         	function(response) {
-        		console.log("proxy.js => Nouveau patient non affecté");
+        		console.log("proxy.js => Affectation non réussie");
         	}
         );
     };
+
+    // Désaffecte un infirmier d'un patient
+    this.desaffecterPatient = function(id){
+    	return $http({
+    		method: 'POST',
+    		url: "/desaffectation",
+    		data: id,
+    		header: {"Content-Type": "application/json"}
+    	}).then(
+    		function(response){
+    			console.log("proxy.js => Diot ! Patient désaffecté !")
+    		},
+    		function(response){
+    			console.log("proxy.js => ...désaffectation non réussie")
+    		}
+    	);
+    }
 };
 proxyNF.$inject = [ "$http" ]; //Injection de dépendances
 
