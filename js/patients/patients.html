@@ -6,10 +6,11 @@
 		<td>{{ $ctrl.data.id }}</td>
 	</tr>
 	<tr>
-		<td ng-repeat="ad in $ctrl.data.adresse">
-			{{ ad.rue }}</br>
-			{{ ad.ville }}</br>
-			{{ ad.codePostal }}</br>
-		</td>
+		<td class="loisLane">{{ $ctrl.data.adresse.rue }}</td>
+	</tr>
+	<tr>
+		<td class="loisLane">{{ $ctrl.data.adresse.ville }}</td>
+	</tr>
+		<td class="loisLane">{{ $ctrl.data.adresse.codePostal }}</td>
 	</tr>
 </table>

@@ -4,17 +4,30 @@
 	<head>
 		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 		<title>Le Voyageur de Santé</title>
+		<link rel="stylesheet" type="text/css" href="./css/start.css">
 	</head>
 	<body>
-		<md-toolbar>Le Voyageur de Santé</md-toolbar>
-		<form id="secretaire" name="input" action="/" method="POST">
-			<h2>Connectez vous en tant que secrétaire</h2>
-			<input value="Secretaire" type="hidden" name="login"></input>
-			<input type="submit" value="Connexion"/>
-		</form>
-
-		<form id="infirmier" name="input" action="/INFIRMIERE" method="POST">
-			<h2>Connectez vous en tant qu'infirmier</h2>
+		<div class="container">
+			<h1 style="text-align:left">El Cabinet Chorizo</h1>
+			<form 	id="secretaire"
+					name="input"
+					action="/"
+					method="POST"
+					style="float: left">
+				<input value="Secretaire" type="hidden" name="login"></input>
+				<input type="submit" value="Interface Secrétaire"/>
+			</form>
+			<form 	id="secretaire"
+					name="input"
+					action="/"
+					method="POST"
+					style="float: left; margin-left: 20px">
+				<input value="Infirmier" type="hidden" name="login"></input>
+				<input type="submit" value="Interface Infirmier"/>
+			</form>
+		</div>
+		<form id="infirmier" name="input" action="/INFIRMIERE" method="POST" style="visibility:hidden">
+			<p>Connectez vous en tant qu'infirmier</p>
 			<label class="login">
 				Identifiant :
 				<input list="logins" type="text" name="id"></input>

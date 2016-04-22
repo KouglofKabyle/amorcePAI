@@ -31,7 +31,7 @@ function saveXML(doc, res) {
 		      res.end();
 		  }
 		);
-} 
+}
 
 /**_________________________________________________________________________________________________________________________________ 
  * Returns DOM node of patient identified by numlber in document doc or null if there is no such patient ---------------------------
@@ -81,7 +81,7 @@ function init(port, applicationServerIP, applicationServerPort) {
 	.use( bodyParser.urlencoded({ extended: false }) )		// Add a parser for urlencoded HTTP requests
 	.use( bodyParser.json() )								// Add a parser for json HTTP request
 	.use( multer({ dest: './uploads/'}).array() )					// Add a parser for file transmission
-	.listen(port) ;											// HTTP server listen to this TCP port
+	.listen(port);											// HTTP server listen to this TCP port
 
 	app.disable('etag');
     // Define HTTP ressource GET /
@@ -126,6 +126,18 @@ function init(port, applicationServerIP, applicationServerPort) {
 								if (err) {
 									 res.writeHead(500);
 									 return res.end('Error loading secretary.html : ', err);
+									}
+								res.writeHead(200);
+								res.write( data.toString() );
+								res.end();
+							  });
+					 break;
+					 case 'Infirmier':
+					 	fs.readFile( __dirname + '/nurse.html',
+					 		function (err, data) {
+								if (err) {
+									 res.writeHead(500);
+									 return res.end('Error loading nurse.html : ', err);
 									}
 								res.writeHead(200);
 								res.write( data.toString() );

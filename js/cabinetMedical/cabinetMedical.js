@@ -1,7 +1,5 @@
 // Template HTML connexion Secrétaire
 var template = require( "./cabinetMedical.html" );
-// Template HTML connexion agendaInfirmiers
-var templateAgendaInfirmier = require("./templateAgendaInfirmier.html");
 
 require( "./cabinetMedical.css" );
 
@@ -130,45 +128,6 @@ module.exports = function(moduleAngular) {
          }
 
 
-        /* this.patientPosition={"lat" : 37.4224764,"lng" : -122.0842499}*/
-         var mapsapi = require( 'google-maps-api' )('AIzaSyDsF_LpIDzCDd0ieieyl2gfJ2xMW3u27CY');
-         ctrl.cartePatients=null;
-         mapsapi().then( function( maps ) {
-                ctrl.cartePatients =
-                    new google.maps.Map(document.getElementById('map'),
-                    {
-                        center: new google.maps.LatLng(45.193861, 5.768843),
-                        zoom: 2,
-                        mapTypeId: google.maps.MapTypeId.SATELLITE
-                      }
-                )
-            });
-         ctrl.genererMarkerPatient = function(adresse) {
-            console.log(adresse);
-            var stringAdresse =
-                "1 "+ adresse.rue
-                +", "+adresse.codePostal
-                +" "+adresse.ville
-                +", France";
-            console.log(stringAdresse);
-            var geocoder = new google.maps.Geocoder();
-            mapsapi().then( function( maps ) {
-                geocoder.geocode( {'address': stringAdresse }, function(results, status) {
-                    if (status === google.maps.GeocoderStatus.OK)
-                        {
-                        var marker = new google.maps.Marker({
-                            map: ctrl.cartePatients,
-                            position: results[0].geometry.location
-                        });
-/*                        ctrl.patientPosition = marker.position;
-*/                    } else {
-                      alert('Geocode was not successful for the following reason: ' + status);
-                    }
-                })
-                // fin de la promise de la map
-            });
-        }
-
     // controller ends here
     };
 
@@ -185,14 +144,5 @@ module.exports = function(moduleAngular) {
             titre    : "@"
         },
         'controller'    : controller
-    });
-    // Construire une balise <agenda-infirmier>
-    moduleAngular.component( "agendaInfirmier", {
-        'template'    : templateAgendaInfirmier,
-        bindings    : {
-            src : "@",
-            titre : "@",
-        },
-        'controller'  : controller
     });
 };

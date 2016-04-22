@@ -57,12 +57,19 @@
 
 	var ngDraggable = __webpack_require__(14);
 
+	// Module pour la gestion des infrimiers & patients
 	var cabinetModule = angular.module( "cabinet", [ angularMaterial, 'ngDraggable'] )
 			.config(function($mdThemingProvider) {
 	  			$mdThemingProvider.theme('default');
 			});
-
 	__webpack_require__( 15 )(cabinetModule);
+
+	// Module pour l'affichage des patients
+	var agendaInfirmierModule = angular.module( "agenda", [ angularMaterial ] )
+			.config(function($mdThemingProvider) {
+	  			$mdThemingProvider.theme('default');
+			});
+	__webpack_require__( 29 )(agendaInfirmierModule);
 
 
 /***/ },
@@ -60440,16 +60447,14 @@
 
 	// Template HTML connexion Secrétaire
 	var template = __webpack_require__( 16 );
-	// Template HTML connexion agendaInfirmiers
-	var templateAgendaInfirmier = __webpack_require__(17);
 
-	__webpack_require__( 18 );
+	__webpack_require__( 17 );
 
 	// Définition du composant
 	module.exports = function(moduleAngular) {
 
 	    // Dépendance
-	    var proxyNF = __webpack_require__( 20 )(moduleAngular);
+	    var proxyNF = __webpack_require__( 19 )(moduleAngular);
 
 	    var controller = function( proxyNF, $http, $mdDialog, $mdMedia ) {
 
@@ -60570,51 +60575,12 @@
 	         }
 
 
-	        /* this.patientPosition={"lat" : 37.4224764,"lng" : -122.0842499}*/
-	         var mapsapi = __webpack_require__( 21 )('AIzaSyDsF_LpIDzCDd0ieieyl2gfJ2xMW3u27CY');
-	         ctrl.cartePatients=null;
-	         mapsapi().then( function( maps ) {
-	                ctrl.cartePatients =
-	                    new google.maps.Map(document.getElementById('map'),
-	                    {
-	                        center: new google.maps.LatLng(45.193861, 5.768843),
-	                        zoom: 2,
-	                        mapTypeId: google.maps.MapTypeId.SATELLITE
-	                      }
-	                )
-	            });
-	         ctrl.genererMarkerPatient = function(adresse) {
-	            console.log(adresse);
-	            var stringAdresse =
-	                "1 "+ adresse.rue
-	                +", "+adresse.codePostal
-	                +" "+adresse.ville
-	                +", France";
-	            console.log(stringAdresse);
-	            var geocoder = new google.maps.Geocoder();
-	            mapsapi().then( function( maps ) {
-	                geocoder.geocode( {'address': stringAdresse }, function(results, status) {
-	                    if (status === google.maps.GeocoderStatus.OK)
-	                        {
-	                        var marker = new google.maps.Marker({
-	                            map: ctrl.cartePatients,
-	                            position: results[0].geometry.location
-	                        });
-	/*                        ctrl.patientPosition = marker.position;
-	*/                    } else {
-	                      alert('Geocode was not successful for the following reason: ' + status);
-	                    }
-	                })
-	                // fin de la promise de la map
-	            });
-	        }
-
 	    // controller ends here
 	    };
 
 
-	    __webpack_require__(31)(moduleAngular);
-	    __webpack_require__(35)(moduleAngular);
+	    __webpack_require__(20)(moduleAngular);
+	    __webpack_require__(24)(moduleAngular);
 
 
 	    // Construire une balise <cabinet-medical>
@@ -60626,38 +60592,23 @@
 	        },
 	        'controller'    : controller
 	    });
-	    // Construire une balise <agenda-infirmier>
-	    moduleAngular.component( "agendaInfirmier", {
-	        'template'    : templateAgendaInfirmier,
-	        bindings    : {
-	            src : "@",
-	            titre : "@",
-	        },
-	        'controller'  : controller
-	    });
 	};
 
 /***/ },
 /* 16 */
 /***/ function(module, exports) {
 
-	module.exports = "<!-- <md-toolbar class=\"titre\">{{ $ctrl.titre }}</md-toolbar> -->\r\n\r\n<!-- Afficher la liste des patients pour chaque Infirmier -->\r\n<div class=\"md-whiteframe-2dp\" ng-cloak>\r\n\r\n\r\n  <md-toolbar >\r\n    <div class=\"md-toolbar-tools\">\r\n\r\n      <h2>\r\n        <span>Gestion des infimiers </span>\r\n      </h2>\r\n      <span flex></span>\r\n\r\n      <md-button ng-click= \"$ctrl.showFormulaire()\" class=\"md-icon-button\" aria-label=\"More\">\r\n        <md-icon md-svg-icon=\"../../images/svg/design/ic_expand_more_48px.svg\"></md-icon>\r\n      </md-button>\r\n\r\n    </div>\r\n  </md-toolbar>\r\n\r\n  <md-content class=\"md-padding\">\r\n      <md-tabs md-selected=\"selectedIndex\" md-dynamic-height md-border-bottom md-autoselect>\r\n        \t<md-tab ng-repeat=\"inf in $ctrl.data.objectInfirmiers | orderBy:inf.nom\"\r\n                  ng-disabled=\"tab.disabled\"\r\n                  label=\"{{inf.nom | uppercase}} {{inf.prenom}}\"\r\n                  ng-click=\"$ctrl.getOngletInfirmier(inf.id)\">\r\n          \t<md-content md-tab-content\r\n                        layout=\"row\"\r\n                        ng-drop=\"true\"\r\n                        ng-drop-success=\"$ctrl.onDropPatient($data)\">\r\n            \t\t<md-list  class=\"tableau-infirmier\"\r\n                          ng-repeat=\"patientX in inf.patients\"\r\n                          layout=\"row\">\r\n                      <!-- <md-content layout=\"row\"\r\n                                  ng-drag=\"true\"\r\n                                  ng-drag-data=\"obj\"> -->\r\n                    <md-content layout=\"row\">\r\n                      <div layout=\"column\">\r\n                        <!-- affiche un patient -->\r\n              \t\t\t\t\t<patient data=\"patientX\" layout-padding></patient>\r\n\r\n                        <!-- actions sur un patient-->\r\n                        <md-button  class=\"md-secondary md-raised\"\r\n                                    ng-click=\"$ctrl.desaffecterPatient(patientX.id)\">\r\n                          Désaffecter</md-button>\r\n                        <md-button  class=\"md-secondary md-raised\"\r\n                                    ng-click=\"$ctrl.supprimerPatient(patientX.id)\">\r\n                          Supprimer</md-button>\r\n\r\n                        </div>\r\n                      <md-divider ng-if=\"!$last\"></md-divider>\r\n                    </md-content>\r\n            \t\t</md-list-item>\r\n  \t        </md-content>\r\n        \t</md-tab>\r\n      </md-tabs>\r\n  </md-content>\r\n  </br>\r\n\r\n\r\n<!-- Ajouter un patient au tableau -->\r\n  <md-toolbar >\r\n    <div class=\"md-toolbar-tools\">\r\n      <h2><span>Ajouter un patient </span></h2>\r\n      <span flex></span>\r\n      <md-button ng-click= \"$ctrl.showFormulaire()\" class=\"md-icon-button\" aria-label=\"More\">\r\n        \t<md-icon md-svg-icon=\"../../images/svg/design/ic_expand_more_48px.svg\"></md-icon>\r\n      </md-button>\r\n    </div>\r\n  </md-toolbar>\r\n  <md-content class=\"md-padding\" layout-align=\"center\">\r\n    <formulaire-new-patient data=\"$ctrl.data\"\r\n                            ng-show=\"$ctrl.formulaire == true\"\r\n                            on-validation=\"$ctrl.updateInfirmiers()\">\r\n    </formulaire-new-patient>\r\n  </md-content>\r\n  </br>\r\n\r\n\r\n<!-- Liste des patients restants de patient restant -->\r\n\t<md-toolbar >\r\n      <div class=\"md-toolbar-tools\">\r\n        <h2><span>Patients non affectés</span></h2>\r\n        <span flex></span>\r\n        <md-button ng-click= \"$ctrl.showPatientsRestants()\" class=\"md-icon-button\" aria-label=\"More\">\r\n          <md-icon md-svg-icon=\"../../images/svg/design/ic_expand_more_48px.svg\"></md-icon>\r\n        </md-button>\r\n      </div>\r\n    </md-toolbar>\r\n\r\n    <div class=\"superman\" ng-show=\"$ctrl.patientsRestants == true\" layout=\"row\">\r\n      <div  class=\"md-whiteframe-2dp\"\r\n            ng-repeat=\"patientY in $ctrl.data.objectPatients\"\r\n            ng-if=\"patientY.infirmier == null\"\r\n            ng-drag=\"true\"\r\n            ng-drag-data=\"patientY.id\"\r\n            ng-drag-handle=\"true\">\r\n        <md-content>\r\n          <patient data=\"patientY\"></patient>\r\n        </md-content>\r\n      </div>\r\n    </div>\r\n\r\n<!-- fin du div md-whiteframe -->\r\n</div>\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n"
+	module.exports = "<!-- <md-toolbar class=\"titre\">{{ $ctrl.titre }}</md-toolbar> -->\r\n\r\n<!-- Afficher la liste des patients pour chaque Infirmier -->\r\n<div class=\"md-whiteframe-2dp\" ng-cloak>\r\n\r\n\r\n  <md-toolbar >\r\n    <div class=\"md-toolbar-tools\">\r\n\r\n      <h2>\r\n        <span>Gestion des infimiers </span>\r\n      </h2>\r\n      <span flex></span>\r\n\r\n      <md-button ng-click= \"$ctrl.showFormulaire()\" class=\"md-icon-button\" aria-label=\"More\">\r\n        <md-icon md-svg-icon=\"../../images/svg/design/ic_expand_more_48px.svg\"></md-icon>\r\n      </md-button>\r\n\r\n    </div>\r\n  </md-toolbar>\r\n\r\n  <md-content class=\"md-padding\">\r\n      <md-tabs md-selected=\"selectedIndex\" md-dynamic-height md-border-bottom md-autoselect>\r\n        \t<md-tab ng-repeat=\"inf in $ctrl.data.objectInfirmiers | orderBy:inf.nom\"\r\n                  ng-disabled=\"tab.disabled\"\r\n                  label=\"{{inf.nom | uppercase}} {{inf.prenom}}\"\r\n                  ng-click=\"$ctrl.getOngletInfirmier(inf.id)\">\r\n          \t<md-content md-tab-content\r\n                        layout=\"row\"\r\n                        ng-drop=\"true\"\r\n                        ng-drop-success=\"$ctrl.onDropPatient($data)\">\r\n            \t\t<md-list  class=\"tableau-infirmier\"\r\n                          ng-repeat=\"patientX in inf.patients\"\r\n                          layout=\"row\">\r\n                      <!-- <md-content layout=\"row\"\r\n                                  ng-drag=\"true\"\r\n                                  ng-drag-data=\"obj\"> -->\r\n                    <md-content layout=\"row\">\r\n                      <div layout=\"column\">\r\n                        <!-- affiche un patient -->\r\n              \t\t\t\t\t<patient data=\"patientX\" layout-padding></patient>\r\n\r\n                        <!-- actions sur un patient-->\r\n                        <md-button  class=\"md-secondary md-raised\"\r\n                                    ng-click=\"$ctrl.desaffecterPatient(patientX.id)\">\r\n                          Désaffecter</md-button>\r\n                        <md-button  class=\"md-secondary md-raised\"\r\n                                    ng-click=\"$ctrl.supprimerPatient(patientX.id)\">\r\n                          Supprimer</md-button>\r\n\r\n                        </div>\r\n                      <md-divider ng-if=\"!$last\"></md-divider>\r\n                    </md-content>\r\n            \t\t</md-list-item>\r\n  \t        </md-content>\r\n        \t</md-tab>\r\n      </md-tabs>\r\n  </md-content>\r\n  </br>\r\n\r\n\r\n<!-- Ajouter un patient au tableau -->\r\n  <md-toolbar >\r\n    <div class=\"md-toolbar-tools\">\r\n      <h2><span>Ajouter un patient </span></h2>\r\n      <span flex></span>\r\n      <md-button ng-click= \"$ctrl.showFormulaire()\" class=\"md-icon-button\" aria-label=\"More\">\r\n        \t<md-icon md-svg-icon=\"../../images/svg/design/ic_expand_more_48px.svg\"></md-icon>\r\n      </md-button>\r\n    </div>\r\n  </md-toolbar>\r\n  <md-content class=\"md-padding\" layout-align=\"center\">\r\n    <formulaire-new-patient data=\"$ctrl.data\"\r\n                            ng-show=\"$ctrl.formulaire == true\"\r\n                            on-validation=\"$ctrl.updateInfirmiers()\">\r\n    </formulaire-new-patient>\r\n  </md-content>\r\n  </br>\r\n\r\n\r\n<!-- Liste des patients restants de patient restant -->\r\n\t<md-toolbar >\r\n      <div class=\"md-toolbar-tools\">\r\n        <h2><span>Patients non affectés</span></h2>\r\n        <span flex></span>\r\n        <md-button ng-click= \"$ctrl.showPatientsRestants()\" class=\"md-icon-button\" aria-label=\"More\">\r\n          <md-icon md-svg-icon=\"../../images/svg/design/ic_expand_more_48px.svg\"></md-icon>\r\n        </md-button>\r\n      </div>\r\n    </md-toolbar>\r\n\r\n    <div class=\"superman\" ng-show=\"$ctrl.patientsRestants == true\" layout=\"row\">\r\n      <div  class=\"md-whiteframe-2dp\"\r\n            ng-repeat=\"patientY in $ctrl.data.objectPatients\"\r\n            ng-if=\"patientY.infirmier == null\"\r\n            ng-drag=\"true\"\r\n            ng-drag-data=\"patientY.id\"\r\n            ng-drag-handle=\"true\">\r\n        <md-content class=\"md-padding\">\r\n          <patient data=\"patientY\"></patient>\r\n        </md-content>\r\n      </div>\r\n    </div>\r\n\r\n<!-- fin du div md-whiteframe -->\r\n</div>\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n"
 
 /***/ },
 /* 17 */
 /***/ function(module, exports) {
 
-	module.exports = "<div layout=\"row\">\r\n\t<md-button ng-repeat=\"patient in $ctrl.data.objectPatients\"\r\n\t\t\t\tclass=\"md-raised md-secondary\",\r\n\t\t\t\tng-click=\"$ctrl.genererMarkerPatient(patient.adresse)\">\r\n\t\t<a>{{patient.nom }}</a>\r\n\t\t<a>{{patient.prenom }}</a>\r\n\t\t<a>{{patient.id }}</a>\r\n\t</md-button>\r\n</div>\r\n\r\n<div id=\"map-wrapper\">\r\n\r\n\t<div id=\"map\"></div>\r\n\r\n</div>"
-
-/***/ },
-/* 18 */
-/***/ function(module, exports) {
-
 	// removed by extract-text-webpack-plugin
 
 /***/ },
-/* 19 */,
-/* 20 */
+/* 18 */,
+/* 19 */
 /***/ function(module, exports) {
 
 		var proxyNF = function($http){
@@ -60891,13 +60842,296 @@
 			// });
 
 /***/ },
+/* 20 */
+/***/ function(module, exports, __webpack_require__) {
+
+	// Template HTML
+	var template = __webpack_require__( 21 );
+	__webpack_require__( 22 );
+
+	// Définition du composant
+	module.exports = function(moduleAngular) {
+
+	    var proxyNF = __webpack_require__( 19 )(moduleAngular);
+
+	    var ctrlInfirmiers = function( ) {
+
+	    }
+	    // Construire une balise <infirmier>
+	    moduleAngular.component( "infirmier", {
+	        'template'    : template,
+	        bindings    : {
+	            titre   : "@",
+	            data    : "<"
+	        },
+	        controller    : ctrlInfirmiers
+	    })
+	}
+
+/***/ },
 /* 21 */
+/***/ function(module, exports) {
+
+	module.exports = "<md-list-item class=\"md-3-line\" ng-click=\"null\">\r\n\t<img ng-src=\"../../{{ $ctrl.data.photo }}\" class=\"md-avatar\" alt=\"{{$ctrl.data.nom}}\">\r\n\t<div class=\"md-list-item-text\">\r\n\t\t  <h3>{{$ctrl.data.nom | uppercase}} {{$ctrl.data.prenom}}</h3>\r\n\t\t  <h4>{{$ctrl.data.id}}</h4>\r\n\t\t  <p>Infirmier</p>\r\n\t</div>\r\n\t<md-divider md-inset ng-if=\"!$last\"></md-divider>\r\n</md-list-item>"
+
+/***/ },
+/* 22 */
+/***/ function(module, exports) {
+
+	// removed by extract-text-webpack-plugin
+
+/***/ },
+/* 23 */,
+/* 24 */
+/***/ function(module, exports, __webpack_require__) {
+
+	// Template HTML
+	var template = __webpack_require__( 25 );
+	var formulaire = __webpack_require__( 26)
+
+	// Définition du composant
+	module.exports = function(moduleAngular) {
+	    __webpack_require__( 27 );
+
+	    var proxyNF = __webpack_require__(19)(moduleAngular);
+
+	    var ctrlPatients = function( $http, proxyNF, $mdDialog, $mdMedia) {
+
+	        var ctrl=this;
+
+	        ctrl.nouveauPatient = {
+	            "patientNumber": "",
+	            "patientName": "",
+	            "patientForname":"",
+	            "patientSex": "",
+	            "patientBirthday": "",
+	            "patientFloor": "",
+	            "patientStreet": "",
+	            "postalCode": "",
+	            "patientCity": ""
+	            };
+
+	        ctrl.sexe = [
+	        {sexe: 'M'}, {sexe: 'F'}
+	        ];
+
+	        ctrl.check = false;
+	        ctrl.affecterInfirmier = {
+	            "patient": "",
+	            "infirmier": ""
+	        };
+
+
+
+	        this.submitPatient = function(){
+	            console.log(ctrl.nouveauPatient);
+	            proxyNF.ajouterNouveauPatient(ctrl.nouveauPatient).then(
+	                function(){
+	                    console.log("patient.js => test d'affectation");
+	                    ctrl.onValidation();
+	                });
+	            if(ctrl.check == true && ctrl.affecterInfirmier.infirmier!=="") {
+	                ctrl.affecterInfirmier.patient = ctrl.nouveauPatient.patientNumber;
+	                proxyNF.affecterPatient(ctrl.affecterInfirmier).then(
+	                function(){
+	                    console.log("patient.js => test d'affectation");
+	                    console.log(ctrl.onValidation);
+	                    ctrl.onValidation();
+	                });
+	            }
+
+	        };
+
+	        // boite dialogue réponse suite à l'ajout d'un patient
+	        ctrl.showAlert = function(ev) {
+	         	   var existePatient = false;
+
+	               ctrl.data.objectPatients.forEach(function(patient){
+	               		console.log(patient.id);
+	                    if(patient.id == ctrl.nouveauPatient.patientNumber) {
+	                        existePatient = true;
+	                    }
+	               });
+	               if (!existePatient){
+	                $mdDialog.show(
+	                  $mdDialog.alert()
+	                    .parent(angular.element(document.querySelector('#popupContainer')))
+	                    .clickOutsideToClose(true)
+	                    .title('Information')
+	                    .textContent(ctrl.nouveauPatient.patientForname +' '+ctrl.nouveauPatient.patientName+ ' a été ajouté avec succès aux patients')
+	                    .ariaLabel('Alert Dialog Demo')
+	                    .ok('Retour!')
+	                    .targetEvent(ev)
+	                );
+	                console.log("salut");
+	                }else{
+	                    $mdDialog.show(
+	                    $mdDialog.alert()
+	                    .parent(angular.element(document.querySelector('#popupContainer')))
+	                    .clickOutsideToClose(true)
+	                    .title('Alerte')
+	                    .textContent("Le patient \" " + ctrl.nouveauPatient.patientForname +' '+ctrl.nouveauPatient.patientName+' \" est déjà enregistré(e)')
+	                    .ariaLabel('Alert Dialog Demo')
+	                    .ok('Retour!')
+	                    .targetEvent(ev)
+	                );
+	              };
+	        };
+	      //-------------------------
+	    };
+
+	    // Construire une balise <patient>
+	    moduleAngular.component( "patient", {
+	        'template'    : template,
+	        bindings    : {
+	            data: "<"
+	        },
+	        'controller'    : ctrlPatients
+	    });
+
+	    //Construire une balise <formlaire-new-patient>
+	    moduleAngular.component( "formulaireNewPatient", {
+	        'template'    : formulaire,
+	        bindings    : {
+	            onValidation: "&",
+	            data: "<"
+	        },
+	        'controller'    : ctrlPatients
+	    });
+
+
+	};
+
+/***/ },
+/* 25 */
+/***/ function(module, exports) {
+
+	module.exports = "<table layout=\"column\">\r\n\t<tr>\r\n\t\t<td>{{$ctrl.data.nom | uppercase}} {{$ctrl.data.prenom}}</td>\r\n\t</tr>\r\n\t<tr>\r\n\t\t<td>{{ $ctrl.data.id }}</td>\r\n\t</tr>\r\n\t<tr>\r\n\t\t<td class=\"loisLane\">{{ $ctrl.data.adresse.rue }}</td>\r\n\t</tr>\r\n\t<tr>\r\n\t\t<td class=\"loisLane\">{{ $ctrl.data.adresse.ville }}</td>\r\n\t</tr>\r\n\t\t<td class=\"loisLane\">{{ $ctrl.data.adresse.codePostal }}</td>\r\n\t</tr>\r\n</table>\r\n"
+
+/***/ },
+/* 26 */
+/***/ function(module, exports) {
+
+	module.exports = "\r\n<form name=\"AjouterPatient\" novalidate ng-submit=\"\r\n\t\t\t\t\tAjouterPatient.$valid && $ctrl.submitPatient()\" id=\"popupContainer\">\r\n\t<md-input-container>\r\n        <label for=\"patientName\">Nom</label>\r\n        <input name=\"nom\" type=\"text\" ng-model=\"$ctrl.nouveauPatient.patientName\" required>\r\n        <div ng-messages=\"AjouterPatient.nom.$error\">\r\n            <div ng-message=\"required\">Name is required.</div>\r\n        </div>\r\n  \t</md-input-container>\r\n\r\n\t<md-input-container>\r\n\t    <label for=\"patientForname\">Prenom</label>\r\n\t    <input type=\"text\" ng-model=\"$ctrl.nouveauPatient.patientForname\">\r\n\t</md-input-container>\r\n\r\n\t<md-input-container>\r\n\t\t<label>Sexe</label>\r\n\t\t<md-select ng-model=\"$ctrl.nouveauPatient.patientSex\">\r\n\t\t\t<md-option ng-repeat=\"x in $ctrl.sexe\" ng-value=\"x.sexe\">\r\n\t\t\t{{ x.sexe }}\r\n\t\t\t</md-option>\r\n\t\t</md-select>\r\n\t</md-input-container>\r\n\r\n\t<md-input-container>\r\n\t    <label for=\"patientNumber\">N° de sécurité sociale</label>\r\n\t    <input name=\"social\" type=\"text\" ng-model=\"$ctrl.nouveauPatient.patientNumber\" ng-pattern=\"/^[0-9]{15}$/\" required>\r\n\t    <div ng-messages=\"AjouterPatient.social.$error\">\r\n\t        <div ng-message=\"pattern\",\"required\"> SSN composé de 15 chiffres </div>\r\n\t    </div>\r\n\t</md-input-container>\r\n\r\n\t<md-input-container>\r\n\t    <label for=\"patientBirthday\">Date de naissance</label>\r\n\t    <input type=\"text\" ng-model=\"$ctrl.nouveauPatient.patientBirthday\">\r\n\t</md-input-container>\r\n\r\n\t<md-input-container>\r\n\t    <label for=\"patientFloor\">Etage</label>\r\n\t    <input type=\"text\" ng-model=\"$ctrl.nouveauPatient.patientFloor\">\r\n\t</md-input-container>\r\n\r\n\t<md-input-container>\r\n\t    <label for=\"patientStreet\">Rue</label>\r\n\t    <input type=\"text\" ng-model=\"$ctrl.nouveauPatient.patientStreet\">\r\n\t</md-input-container>\r\n\r\n\t<md-input-container>\r\n\t    <label for=\"postalCode\">Code postal</label>\r\n\t    <input type=\"text\" ng-model=\"$ctrl.nouveauPatient.postalCode\">\r\n\t</md-input-container>\r\n\r\n\t<md-input-container>\r\n\t    <label for=\"patientCity\">Ville</label>\r\n\t    <input type=\"text\" ng-model=\"$ctrl.nouveauPatient.patientCity\">\r\n\t</md-input-container>\r\n\r\n\t</br>\r\n\r\n\t<md-checkbox ng-model=\"$ctrl.check\">\r\n\t\t Sélectionnez un infirmier\r\n\t</md-checkbox>\r\n\r\n\t<md-input-container ng-show=\"$ctrl.check == true\">\r\n\t\t<label>Sélectionnez un infirmier</label>\r\n\t\t<md-select ng-model=\"$ctrl.affecterInfirmier.infirmier\">\r\n\t\t\t<md-option ng-repeat=\"inf in $ctrl.data.objectInfirmiers\" ng-value=\"inf.id\">\r\n\t\t\t{{ inf.nom | uppercase }} {{ inf.prenom }}\r\n\t\t\t</md-option>\r\n\t\t</md-select>\r\n\t</md-input-container>\r\n\r\n\t<md-button ng-disabled=\"AjouterPatient.nom.$invalid || AjouterPatient.social.$invalid\" class=\"md-raised md-primary\" ng-click=\"$ctrl.showAlert($event)\" type=\"submit\">Submit</md-button>\r\n\r\n\r\n</form>\r\n"
+
+/***/ },
+/* 27 */
+/***/ function(module, exports) {
+
+	// removed by extract-text-webpack-plugin
+
+/***/ },
+/* 28 */,
+/* 29 */
+/***/ function(module, exports, __webpack_require__) {
+
+	// Template HTML connexion agendaInfirmiers
+	var templateAgendaInfirmier = __webpack_require__(30);
+	__webpack_require__( 31 );
+
+	// Définition du composant
+	module.exports = function(moduleAngular) {
+
+	    // Dépendance
+	    var proxyNF = __webpack_require__( 19 )(moduleAngular);
+
+	    var controller = function( proxyNF, $http, $mdDialog, $mdMedia ) {
+
+	        // Message d'accueil
+	        console.log("Hey !! This is controller, man...j'essaye de te récupérer les données..." );
+
+	        // Récupérer les objets Cabinet, Infirmiers, Patients
+	        var ctrl = this;
+	        proxyNF.getData(this.src).then( function(cabinetJS) {
+	            ctrl.data = cabinetJS.objectPatients;
+	            console.log(ctrl.data);
+	        });
+
+
+	        this.infirmierSelectionne = "";
+	/*        // Mettre à jour les données
+	        this.updateInfirmiers = function() {
+	            proxyNF.getData(this.src).then( function(cabinetJS) {
+	            ctrl.data = cabinetJS.objectPatients;
+	            console.log("CabinetMedical.js => mise à jour des données");
+	        });
+	        };
+	*/
+
+	         this.patientPosition={"lat" : 37.4224764,"lng" : -122.0842499}
+	         var mapsapi = __webpack_require__( 33 )('AIzaSyDsF_LpIDzCDd0ieieyl2gfJ2xMW3u27CY');
+	         ctrl.cartePatients=null;
+	         mapsapi().then( function( maps ) {
+	                ctrl.cartePatients =
+	                    new google.maps.Map(document.getElementById('map'),
+	                    {
+	                        center: new google.maps.LatLng(45.193861, 5.768843),
+	                        zoom: 2,
+	                        mapTypeId: google.maps.MapTypeId.SATELLITE
+	                      }
+	                )
+	            });
+	         ctrl.genererMarkerPatient = function(adresse) {
+	            console.log(adresse);
+	            var stringAdresse =
+	                "1 "+ adresse.rue
+	                +", "+adresse.codePostal
+	                +" "+adresse.ville
+	                +", France";
+	            console.log(stringAdresse);
+	            var geocoder = new google.maps.Geocoder();
+	            mapsapi().then( function( maps ) {
+	                geocoder.geocode( {'address': stringAdresse }, function(results, status) {
+	                    if (status === google.maps.GeocoderStatus.OK)
+	                        {
+	                        var marker = new google.maps.Marker({
+	                            map: ctrl.cartePatients,
+	                            position: results[0].geometry.location
+	                        });
+	/*                        ctrl.patientPosition = marker.position;
+	*/                    } else {
+	                      alert('Geocode was not successful for the following reason: ' + status);
+	                    }
+	                })
+	                // fin de la promise de la map
+	            });
+	        }
+
+	    // controller ends here
+	    };
+
+	    // Construire une balise <agenda-infirmier>
+	    moduleAngular.component( "agendaInfirmier", {
+	        'template'    : templateAgendaInfirmier,
+	        bindings    : {
+	            src : "@",
+	            titre : "@",
+	        },
+	        'controller'  : controller
+	    });
+	};
+
+/***/ },
+/* 30 */
+/***/ function(module, exports) {
+
+	module.exports = "<md-content class=\"md-whiteframe-4dp\">\r\n\t\t<md-input-container>\r\n\t        <label for=\"idInfirmier\">Veuillez entrer votre identifiant</label>\r\n\t        <input name=\"nom\" type=\"text\" ng-model=\"$ctrl.infirmierSelectionne\" required>\r\n\t  \t</md-input-container>\r\n</md-content>\r\n\r\n<div layout=\"row\">\r\n\t<md-button\tng-repeat =\t\"patient in $ctrl.data |\r\n\t\t\t\t\t\t\tfilter : {infirmier:$ctrl.infirmierSelectionne}\"\r\n\t\t\t\tclass=\"md-raised md-secondary\",\r\n\t\t\t\tng-click=\"$ctrl.genererMarkerPatient(patient.adresse)\">\r\n\t\t<a>{{patient.nom }}</a>\r\n\t\t<a>{{patient.prenom }}</a>\r\n\t</md-button>\r\n</div>\r\n\r\n<div id=\"map-wrapper\">\r\n\r\n\t<div id=\"map\"></div>\r\n\r\n</div>"
+
+/***/ },
+/* 31 */
+/***/ function(module, exports) {
+
+	// removed by extract-text-webpack-plugin
+
+/***/ },
+/* 32 */,
+/* 33 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/** @module google-maps-api */
 
-	var script = __webpack_require__( 22 ),
-	  promise = __webpack_require__( 23 );
+	var script = __webpack_require__( 34 ),
+	  promise = __webpack_require__( 35 );
 
 	var maps = null,
 	  callBacks = [],
@@ -61010,7 +61244,7 @@
 
 
 /***/ },
-/* 22 */
+/* 34 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
@@ -61139,23 +61373,23 @@
 
 
 /***/ },
-/* 23 */
+/* 35 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	module.exports = __webpack_require__(24)
-	__webpack_require__(28)
-	__webpack_require__(29)
-	__webpack_require__(30)
+	module.exports = __webpack_require__(36)
+	__webpack_require__(40)
+	__webpack_require__(41)
+	__webpack_require__(42)
 
 /***/ },
-/* 24 */
+/* 36 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	var asap = __webpack_require__(25)
+	var asap = __webpack_require__(37)
 
 	module.exports = Promise;
 	function Promise(fn) {
@@ -61261,7 +61495,7 @@
 
 
 /***/ },
-/* 25 */
+/* 37 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(process, setImmediate) {
@@ -61378,10 +61612,10 @@
 	module.exports = asap;
 
 
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(26), __webpack_require__(27).setImmediate))
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(38), __webpack_require__(39).setImmediate))
 
 /***/ },
-/* 26 */
+/* 38 */
 /***/ function(module, exports) {
 
 	// shim for using process in browser
@@ -61478,10 +61712,10 @@
 
 
 /***/ },
-/* 27 */
+/* 39 */
 /***/ function(module, exports, __webpack_require__) {
 
-	/* WEBPACK VAR INJECTION */(function(setImmediate, clearImmediate) {var nextTick = __webpack_require__(26).nextTick;
+	/* WEBPACK VAR INJECTION */(function(setImmediate, clearImmediate) {var nextTick = __webpack_require__(38).nextTick;
 	var apply = Function.prototype.apply;
 	var slice = Array.prototype.slice;
 	var immediateIds = {};
@@ -61557,16 +61791,16 @@
 	exports.clearImmediate = typeof clearImmediate === "function" ? clearImmediate : function(id) {
 	  delete immediateIds[id];
 	};
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(27).setImmediate, __webpack_require__(27).clearImmediate))
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(39).setImmediate, __webpack_require__(39).clearImmediate))
 
 /***/ },
-/* 28 */
+/* 40 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	var Promise = __webpack_require__(24)
-	var asap = __webpack_require__(25)
+	var Promise = __webpack_require__(36)
+	var asap = __webpack_require__(37)
 
 	module.exports = Promise
 	Promise.prototype.done = function (onFulfilled, onRejected) {
@@ -61579,15 +61813,15 @@
 	}
 
 /***/ },
-/* 29 */
+/* 41 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
 	//This file contains the ES6 extensions to the core Promises/A+ API
 
-	var Promise = __webpack_require__(24)
-	var asap = __webpack_require__(25)
+	var Promise = __webpack_require__(36)
+	var asap = __webpack_require__(37)
 
 	module.exports = Promise
 
@@ -61693,15 +61927,15 @@
 
 
 /***/ },
-/* 30 */
+/* 42 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
 	//This file contains then/promise specific extensions that are only useful for node.js interop
 
-	var Promise = __webpack_require__(24)
-	var asap = __webpack_require__(25)
+	var Promise = __webpack_require__(36)
+	var asap = __webpack_require__(37)
 
 	module.exports = Promise
 
@@ -61760,255 +61994,6 @@
 	  })
 	}
 
-
-/***/ },
-/* 31 */
-/***/ function(module, exports, __webpack_require__) {
-
-	// Template HTML
-	var template = __webpack_require__( 32 );
-	__webpack_require__( 33 );
-
-	// Définition du composant
-	module.exports = function(moduleAngular) {
-
-	    var proxyNF = __webpack_require__( 20 )(moduleAngular);
-
-	    var ctrlInfirmiers = function( ) {
-
-	    }
-	    // Construire une balise <infirmier>
-	    moduleAngular.component( "infirmier", {
-	        'template'    : template,
-	        bindings    : {
-	            titre   : "@",
-	            data    : "<"
-	        },
-	        controller    : ctrlInfirmiers
-	    })
-	}
-
-/***/ },
-/* 32 */
-/***/ function(module, exports) {
-
-	module.exports = "<md-list-item class=\"md-3-line\" ng-click=\"null\">\r\n\t<img ng-src=\"../../{{ $ctrl.data.photo }}\" class=\"md-avatar\" alt=\"{{$ctrl.data.nom}}\">\r\n\t<div class=\"md-list-item-text\">\r\n\t\t  <h3>{{$ctrl.data.nom | uppercase}} {{$ctrl.data.prenom}}</h3>\r\n\t\t  <h4>{{$ctrl.data.id}}</h4>\r\n\t\t  <p>Infirmier</p>\r\n\t</div>\r\n\t<md-divider md-inset ng-if=\"!$last\"></md-divider>\r\n</md-list-item>"
-
-/***/ },
-/* 33 */
-/***/ function(module, exports) {
-
-	// removed by extract-text-webpack-plugin
-
-/***/ },
-/* 34 */,
-/* 35 */
-/***/ function(module, exports, __webpack_require__) {
-
-	// Template HTML
-	var template = __webpack_require__( 36 );
-	var formulaire = __webpack_require__( 37)
-	var patientMapTemplate = __webpack_require__(38);
-
-
-
-	// Définition du composant
-	module.exports = function(moduleAngular) {
-	    __webpack_require__( 39 );
-	    var mapsapi = __webpack_require__( 21 )( 'AIzaSyDsF_LpIDzCDd0ieieyl2gfJ2xMW3u27CY' );
-
-	    var proxyNF = __webpack_require__(20)(moduleAngular);
-
-	    var ctrlPatients = function( $http, proxyNF, $mdDialog, $mdMedia) {
-
-	        var ctrl=this;
-
-	        ctrl.nouveauPatient = {
-	            "patientNumber": "",
-	            "patientName": "",
-	            "patientForname":"",
-	            "patientSex": "",
-	            "patientBirthday": "",
-	            "patientFloor": "",
-	            "patientStreet": "",
-	            "postalCode": "",
-	            "patientCity": ""
-	            };
-
-	        ctrl.sexe = [
-	        {sexe: 'M'}, {sexe: 'F'}
-	        ];
-
-	        ctrl.check = false;
-	        ctrl.affecterInfirmier = {
-	            "patient": "",
-	            "infirmier": ""
-	        };
-
-
-
-	        this.submitPatient = function(){
-	            console.log(ctrl.nouveauPatient);
-	            proxyNF.ajouterNouveauPatient(ctrl.nouveauPatient).then(
-	                function(){
-	                    console.log("patient.js => test d'affectation");
-	                    ctrl.onValidation();
-	                });
-	            if(ctrl.check == true && ctrl.affecterInfirmier.infirmier!=="") {
-	                ctrl.affecterInfirmier.patient = ctrl.nouveauPatient.patientNumber;
-	                proxyNF.affecterPatient(ctrl.affecterInfirmier).then(
-	                function(){
-	                    console.log("patient.js => test d'affectation");
-	                    console.log(ctrl.onValidation);
-	                    ctrl.onValidation();
-	                });
-	            }
-
-	        };
-
-	        // boite dialogue réponse suite à l'ajout d'un patient
-	        ctrl.showAlert = function(ev) {
-	         	   var existePatient = false;
-
-	               ctrl.data.objectPatients.forEach(function(patient){
-	               		console.log(patient.id);
-	                    if(patient.id == ctrl.nouveauPatient.patientNumber) {
-	                        existePatient = true;
-	                    }
-	               });
-	               if (!existePatient){
-	                $mdDialog.show(
-	                  $mdDialog.alert()
-	                    .parent(angular.element(document.querySelector('#popupContainer')))
-	                    .clickOutsideToClose(true)
-	                    .title('Information')
-	                    .textContent(ctrl.nouveauPatient.patientForname +' '+ctrl.nouveauPatient.patientName+ ' a été ajouté avec succès aux patients')
-	                    .ariaLabel('Alert Dialog Demo')
-	                    .ok('Retour!')
-	                    .targetEvent(ev)
-	                );
-	                console.log("salut");
-	                }else{
-	                    $mdDialog.show(
-	                    $mdDialog.alert()
-	                    .parent(angular.element(document.querySelector('#popupContainer')))
-	                    .clickOutsideToClose(true)
-	                    .title('Alerte')
-	                    .textContent("Le patient \" " + ctrl.nouveauPatient.patientForname +' '+ctrl.nouveauPatient.patientName+' \" est déjà enregistré(e)')
-	                    .ariaLabel('Alert Dialog Demo')
-	                    .ok('Retour!')
-	                    .targetEvent(ev)
-	                );
-	              };
-	        };
-
-
-
-	        //-- Affichage de la carte 
-	             mapsapi().then( function( maps ) {
-	              var maCarte=  new google.maps.Map(document.getElementById('map')
-	                , { center: new google.maps.LatLng(45.193861, 5.768843)
-	                  , zoom: 11
-	                  }
-	                );
-	             var marker1= new google.maps.Marker(
-	                { position  : new google.maps.LatLng(45.193861, 5.768843)
-	                , map       : maCarte
-	                , title     : "Je suis ici!"
-	                } );
-	             var marker2= new google.maps.Marker(
-	                { position  : new google.maps.LatLng(44.9333, 4.9)
-	                , map       : maCarte
-	                , title     : "Je suis ici!"
-	                } );
-
-
-	             //-- Affichage des marqueurs des patients déjà présent
-	            var adresse = "80 Rue de la Chimie, 38400 Saint-Martin-d'Hères, France";
-
-	              var adresses = []; // tableau de chaine de caracteres de l'adresse de chaque patient
-	              ctrl.data.objectPatients.forEach(function(patient){
-	                patient.adresse.forEach(function(adresse){
-	                        var stringAdresse = "1 "+ adresse.rue +", "+adresse.codePostal+" "+adresse.ville +", France";
-	                        adresses.push(stringAdresse);
-	                })
-	              });
-
-	              // geocodage
-	                geocoder = new google.maps.Geocoder();
-
-	                 adresses.forEach(function(uneAdresse){
-	                    geocoder.geocode(
-	                               {'address': uneAdresse}
-	                         , function(results, status) {
-	                            if (status == google.maps.GeocoderStatus.OK) {
-	                                    new google.maps.Marker({
-	                                            map: maCarte,
-	                                            position: results[0].geometry.location
-	                                          });
-	                                } else {console.error("Error geocoding:", status);}
-	                            }
-	                    );
-	                })
-
-
-
-
-
-
-
-	           
-
-	            });
-	    
-	      //-------------------------
-	    };
-
-	    // Construire une balise <patient>
-	    moduleAngular.component( "patient", {
-	        'template'    : template,
-	        bindings    : {
-	            data: "<"
-	        },
-	        'controller'    : ctrlPatients
-	    });
-
-	    //Construire une balise <formlaire-new-patient>
-	    moduleAngular.component( "formulaireNewPatient", {
-	        'template'    : formulaire,
-	        bindings    : {
-	            onValidation: "&",
-	            data: "<"
-	        },
-	        'controller'    : ctrlPatients
-	    });
-
-
-	};
-
-/***/ },
-/* 36 */
-/***/ function(module, exports) {
-
-	module.exports = "<table layout=\"column\">\r\n\t<tr>\r\n\t\t<td>{{$ctrl.data.nom | uppercase}} {{$ctrl.data.prenom}}</td>\r\n\t</tr>\r\n\t<tr>\r\n\t\t<td>{{ $ctrl.data.id }}</td>\r\n\t</tr>\r\n\t<tr>\r\n\t\t<td ng-repeat=\"ad in $ctrl.data.adresse\">\r\n\t\t\t{{ ad.rue }}</br>\r\n\t\t\t{{ ad.ville }}</br>\r\n\t\t\t{{ ad.codePostal }}</br>\r\n\t\t</td>\r\n\t</tr>\r\n</table>\r\n"
-
-/***/ },
-/* 37 */
-/***/ function(module, exports) {
-
-	module.exports = "\r\n<form name=\"AjouterPatient\" novalidate ng-submit=\"\r\n\t\t\t\t\tAjouterPatient.$valid && $ctrl.submitPatient()\" id=\"popupContainer\">\r\n\t<md-input-container>\r\n        <label for=\"patientName\">Nom</label>\r\n        <input name=\"nom\" type=\"text\" ng-model=\"$ctrl.nouveauPatient.patientName\" required>\r\n        <div ng-messages=\"AjouterPatient.nom.$error\">\r\n            <div ng-message=\"required\">Name is required.</div>\r\n        </div>\r\n  \t</md-input-container>\r\n\r\n\t<md-input-container>\r\n\t    <label for=\"patientForname\">Prenom</label>\r\n\t    <input type=\"text\" ng-model=\"$ctrl.nouveauPatient.patientForname\">\r\n\t</md-input-container>\r\n\r\n\t<md-input-container>\r\n\t\t<label>Sexe</label>\r\n\t\t<md-select ng-model=\"$ctrl.nouveauPatient.patientSex\">\r\n\t\t\t<md-option ng-repeat=\"x in $ctrl.sexe\" ng-value=\"x.sexe\">\r\n\t\t\t{{ x.sexe }}\r\n\t\t\t</md-option>\r\n\t\t</md-select>\r\n\t</md-input-container>\r\n\r\n\t<md-input-container>\r\n\t    <label for=\"patientNumber\">N° de sécurité sociale</label>\r\n\t    <input name=\"social\" type=\"text\" ng-model=\"$ctrl.nouveauPatient.patientNumber\" ng-pattern=\"/^[0-9]{15}$/\" required>\r\n\t    <div ng-messages=\"AjouterPatient.social.$error\">\r\n\t        <div ng-message=\"pattern\",\"required\"> SSN composé de 15 chiffres </div>\r\n\t    </div>\r\n\t</md-input-container>\r\n\r\n\t<md-input-container>\r\n\t    <label for=\"patientBirthday\">Date de naissance</label>\r\n\t    <input type=\"text\" ng-model=\"$ctrl.nouveauPatient.patientBirthday\">\r\n\t</md-input-container>\r\n\r\n\t<md-input-container>\r\n\t    <label for=\"patientFloor\">Etage</label>\r\n\t    <input type=\"text\" ng-model=\"$ctrl.nouveauPatient.patientFloor\">\r\n\t</md-input-container>\r\n\r\n\t<md-input-container>\r\n\t    <label for=\"patientStreet\">Rue</label>\r\n\t    <input type=\"text\" ng-model=\"$ctrl.nouveauPatient.patientStreet\">\r\n\t</md-input-container>\r\n\r\n\t<md-input-container>\r\n\t    <label for=\"postalCode\">Code postal</label>\r\n\t    <input type=\"text\" ng-model=\"$ctrl.nouveauPatient.postalCode\">\r\n\t</md-input-container>\r\n\r\n\t<md-input-container>\r\n\t    <label for=\"patientCity\">Ville</label>\r\n\t    <input type=\"text\" ng-model=\"$ctrl.nouveauPatient.patientCity\">\r\n\t</md-input-container>\r\n\r\n\t</br>\r\n\r\n\t<md-checkbox ng-model=\"$ctrl.check\">\r\n\t\t Sélectionnez un infirmier\r\n\t</md-checkbox>\r\n\r\n\t<md-input-container ng-show=\"$ctrl.check == true\">\r\n\t\t<label>Sélectionnez un infirmier</label>\r\n\t\t<md-select ng-model=\"$ctrl.affecterInfirmier.infirmier\">\r\n\t\t\t<md-option ng-repeat=\"inf in $ctrl.data.objectInfirmiers\" ng-value=\"inf.id\">\r\n\t\t\t{{ inf.nom | uppercase }} {{ inf.prenom }}\r\n\t\t\t</md-option>\r\n\t\t</md-select>\r\n\t</md-input-container>\r\n\r\n\t<md-button ng-disabled=\"AjouterPatient.nom.$invalid || AjouterPatient.social.$invalid\" class=\"md-raised md-primary\" ng-click=\"$ctrl.showAlert($event)\" type=\"submit\">Submit</md-button>\r\n\r\n\r\n</form>\r\n"
-
-/***/ },
-/* 38 */
-/***/ function(module, exports) {
-
-	module.exports = "\r\n<h3> Manges mes mortssssss </h3>\r\n    <div id=\"map\"> </div>\r\n\r\n"
-
-/***/ },
-/* 39 */
-/***/ function(module, exports) {
-
-	// removed by extract-text-webpack-plugin
 
 /***/ }
 /******/ ]);

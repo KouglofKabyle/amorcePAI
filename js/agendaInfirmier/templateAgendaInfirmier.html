@@ -1,0 +1,22 @@
+<md-content class="md-whiteframe-4dp">
+		<md-input-container>
+	        <label for="idInfirmier">Veuillez entrer votre identifiant</label>
+	        <input name="nom" type="text" ng-model="$ctrl.infirmierSelectionne" required>
+	  	</md-input-container>
+</md-content>
+
+<div layout="row">
+	<md-button	ng-repeat =	"patient in $ctrl.data |
+							filter : {infirmier:$ctrl.infirmierSelectionne}"
+				class="md-raised md-secondary",
+				ng-click="$ctrl.genererMarkerPatient(patient.adresse)">
+		<a>{{patient.nom }}</a>
+		<a>{{patient.prenom }}</a>
+	</md-button>
+</div>
+
+<div id="map-wrapper">
+
+	<div id="map"></div>
+
+</div>
