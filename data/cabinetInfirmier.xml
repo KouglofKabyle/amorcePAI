@@ -184,7 +184,7 @@
 			<prenom>Flame</prenom>
 			<numero>123456789012973</numero>
 			<sexe/><naissance/>
-			<visite date="2014-12-08" intervenant=""/>
+			<visite date="2014-12-08" intervenant="003"/>
 			<adresse>
 				<etage/>
 				<numero/>

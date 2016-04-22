@@ -58,7 +58,7 @@ function init(port, applicationServerIP, applicationServerPort) {
     , app											// will reference the HTTP server
     , applicationServer = {ip: applicationServerIP, port: applicationServerPort}	// Application server IP and port that is in charge of optimizing nurses' travels, by default, this server
     ;
-    
+
     // Read and parse the XML file containing the data
     fs.readFile	(__dirname + '/data/cabinetInfirmier.xml'
 		 , function(err, dataObj) {
@@ -73,7 +73,7 @@ function init(port, applicationServerIP, applicationServerPort) {
 			    }
 		 }
 		);
-    
+
     // Initialize the HTTP server
     app	= express();
 	app.use(staticGzip(/^\/?dist\/.*(\.js|\.css)$/));
@@ -115,7 +115,7 @@ function init(port, applicationServerIP, applicationServerPort) {
 				   });
 		  }
 		);
-		
+
 	// Define HTTP ressource POST /, contains a login that identify the secretary or one nurse
 	app.post( '/'
 			, function(req, res) {
@@ -139,7 +139,7 @@ function init(port, applicationServerIP, applicationServerPort) {
 					}
 				}
 			);
-			
+
 	// Define HTTP ressource PORT /addPatient, may contains new patient information
 	app.post( '/addPatient'
 			, function(req, res) {
@@ -153,7 +153,7 @@ function init(port, applicationServerIP, applicationServerPort) {
 				 req.body.patientStreet		= req.body.patientStreet	|| '';
 				 req.body.patientPostalCode	= req.body.patientPostalCode|| '';
 				 req.body.patientCity		= req.body.patientCity		|| '';
-				 
+
 				 var patients = doc.getElementsByTagName('patients')[0];
 				 // Is it a new patient or not ?
 				 var newPatient = getPatient(doc, req.body.patientNumber);
@@ -207,13 +207,11 @@ function init(port, applicationServerIP, applicationServerPort) {
 						var codePostal = doc.createElement('codePostal');
 						codePostal.appendChild( doc.createTextNode(req.body.patientPostalCode) );
 						adresse.appendChild( codePostal );
-						
+
 				 console.log( xmlSerializer.serializeToString(newPatient) );
 				 saveXML(doc, res);
 				}
 			);
-
-	
 
     // Suppression de patient
     app.post('/removePatient'
@@ -266,7 +264,6 @@ function init(port, applicationServerIP, applicationServerPort) {
 
             }
     );
-
 
     // Define HTTP ressource POST /affectation, associate a patient with a nurse
     app.post( '/affectation'

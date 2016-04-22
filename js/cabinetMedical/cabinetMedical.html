@@ -36,7 +36,6 @@
                                   ng-drag="true"
                                   ng-drag-data="obj"> -->
                     <md-content layout="row">
-
                       <div layout="column">
                         <!-- affiche un patient -->
               					<patient data="patientX" layout-padding></patient>
@@ -84,40 +83,29 @@
       <div class="md-toolbar-tools">
         <h2><span>Patients non affectés</span></h2>
         <span flex></span>
-
         <md-button ng-click= "$ctrl.showPatientsRestants()" class="md-icon-button" aria-label="More">
           <md-icon md-svg-icon="../../images/svg/design/ic_expand_more_48px.svg"></md-icon>
         </md-button>
-
       </div>
     </md-toolbar>
 
     <div class="superman" ng-show="$ctrl.patientsRestants == true" layout="row">
-
-          <div  class="md-whiteframe-2dp"
-                ng-repeat="patientY in $ctrl.data.objectPatients"
-                ng-if="patientY.infirmier == null"
-                ng-drag="true"
-                ng-drag-data="patientY.id"
-                ng-drag-handle="true">
-            <md-content>
-    			   <patient data="patientY"></patient>
-            </md-content>
-          </div>
+      <div  class="md-whiteframe-2dp"
+            ng-repeat="patientY in $ctrl.data.objectPatients"
+            ng-if="patientY.infirmier == null"
+            ng-drag="true"
+            ng-drag-data="patientY.id"
+            ng-drag-handle="true">
+        <md-content>
+          <patient data="patientY"></patient>
+        </md-content>
+      </div>
     </div>
 
-
+<!-- fin du div md-whiteframe -->
 </div>
 
 
-
-
-
-
-<!--
-        <patient-map  data="$ctrl.data"> </patient-map>
-
- -->
 
 
 

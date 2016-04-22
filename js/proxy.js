@@ -57,11 +57,11 @@
 				prenom: unPatient.querySelector("prenom").textContent,
 				sexe: unPatient.querySelector("sexe").textContent,
 				date : unPatient.querySelector("naissance").textContent,
-				adresse: [{
+				adresse: {
 							rue: unPatient.querySelector("rue").textContent,
 							ville: unPatient.querySelector("ville").textContent,
 							codePostal: unPatient.querySelector("codePostal").textContent
-						}],
+						},
 				infirmier: unPatient.querySelector("visite").getAttribute("intervenant")
 				// renseigne sur l'ID de infirmier qui s'occupe du patient,
 				// si null: le patient "n'appartient" à aucune infirmier: il n'a pas subi d'intervention !

@@ -1,3 +1,16 @@
+#map{
+  height: 100%;
+  width: 100%;
+  padding: 0px;
+  margin: 0px;
+}
+
+#map-wrapper{
+  height: 60%;
+  width: 100%;
+}
+
+
 .titre{
   height: 25px;
   text-align: center;

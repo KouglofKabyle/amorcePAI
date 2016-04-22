@@ -176,14 +176,5 @@ module.exports = function(moduleAngular) {
         'controller'    : ctrlPatients
     });
 
-    moduleAngular.component( "patientMap", {
-        'template'    : patientMapTemplate,
-        bindings    : {
-            onValidation: "&",
-            data: "<"
-        },
-        'controller'    : ctrlPatients
-    });
-
 
 };
