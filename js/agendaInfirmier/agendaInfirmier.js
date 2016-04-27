@@ -39,8 +39,7 @@ module.exports = function(moduleAngular) {
                     new google.maps.Map(document.getElementById('map'),
                     {
                         center: new google.maps.LatLng(45.193861, 5.768843),
-                        zoom: 2,
-                        mapTypeId: google.maps.MapTypeId.SATELLITE
+                        zoom: 12
                       }
                 )
             });
@@ -78,7 +77,7 @@ module.exports = function(moduleAngular) {
         'template'    : templateAgendaInfirmier,
         bindings    : {
             src : "@",
-            titre : "@",
+            titre : "@"
         },
         'controller'  : controller
     });

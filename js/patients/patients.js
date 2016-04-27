@@ -88,7 +88,7 @@ module.exports = function(moduleAngular) {
                     .ok('Retour!')
                     .targetEvent(ev)
                 );
-              };
+              }
         };
       //-------------------------
     };
