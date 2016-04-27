@@ -39,7 +39,7 @@ module.exports = function(moduleAngular) {
                     new google.maps.Map(document.getElementById('map'),
                     {
                         center: new google.maps.LatLng(45.193861, 5.768843),
-                        zoom: 2,
+                        zoom: 11,
                         mapTypeId: google.maps.MapTypeId.SATELLITE
                       }
                 )
@@ -69,6 +69,18 @@ module.exports = function(moduleAngular) {
                 // fin de la promise de la map
             });
         }
+
+        ctrl.displayInfo = function(ev) {
+             var useFullScreen = ($mdMedia('sm') || $mdMedia('xs'));
+            $mdDialog.show({
+              template: require("./info.html"),
+              parent: angular.element(document.body),
+              targetEvent: ev,
+              clickOutsideToClose:true,
+              fullscreen: useFullScreen
+            })
+
+         }
 
     // controller ends here
     };

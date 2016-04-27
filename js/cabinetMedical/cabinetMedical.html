@@ -1,6 +1,24 @@
 <!-- <md-toolbar class="titre">{{ $ctrl.titre }}</md-toolbar> -->
 
 <!-- Afficher la liste des patients pour chaque Infirmier -->
+
+ <md-toolbar class="md-background">
+      <div class="md-toolbar-tools">
+        <md-button aria-label="Go Back" onclick="history.go(-1);">
+           <md-icon md-svg-icon="../../images/home.svg"></md-icon>
+
+        </md-button>
+        <h2>
+          <span>Interface Secretaire</span>
+        </h2>
+        <span flex></span>
+        <md-button class="md-raised" aria-label="Learn More" ng-click="$ctrl.displayInfo($event)">
+          Dire Bonjour
+        </md-button>  
+       
+      </div>
+    </md-toolbar>
+
 <div class="md-whiteframe-2dp" ng-cloak>
 
 

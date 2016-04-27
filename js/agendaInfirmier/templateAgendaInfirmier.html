@@ -1,3 +1,22 @@
+<md-toolbar class="md-background">
+      <div class="md-toolbar-tools">
+        <md-button aria-label="Go Back" onclick="history.go(-1);">
+           <md-icon md-svg-icon="../../images/home.svg"></md-icon>
+
+        </md-button>
+        <h2>
+          <span>Interface Infirmier</span>
+        </h2>
+        <span flex></span>
+        <md-button md-no-ink  aria-label="Learn More" ng-click="$ctrl.displayInfo($event)">
+          Dire Merci
+        </md-button>  
+       
+      </div>
+    </md-toolbar>
+
+
+
 <md-content class="md-whiteframe-4dp">
 		<md-input-container>
 	        <label for="idInfirmier">Veuillez entrer votre identifiant</label>
