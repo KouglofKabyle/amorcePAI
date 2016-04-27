@@ -22,14 +22,6 @@ module.exports = function(moduleAngular) {
 
 
         this.infirmierSelectionne = "";
-/*        // Mettre à jour les données
-        this.updateInfirmiers = function() {
-            proxyNF.getData(this.src).then( function(cabinetJS) {
-            ctrl.data = cabinetJS.objectPatients;
-            console.log("CabinetMedical.js => mise à jour des données");
-        });
-        };
-*/
 
          this.patientPosition={"lat" : 37.4224764,"lng" : -122.0842499}
          var mapsapi = require( 'google-maps-api' )('AIzaSyDsF_LpIDzCDd0ieieyl2gfJ2xMW3u27CY');
@@ -39,7 +31,7 @@ module.exports = function(moduleAngular) {
                     new google.maps.Map(document.getElementById('map'),
                     {
                         center: new google.maps.LatLng(45.193861, 5.768843),
-                        zoom: 12
+                        zoom: 12,
                       }
                 )
             });
@@ -68,6 +60,18 @@ module.exports = function(moduleAngular) {
                 // fin de la promise de la map
             });
         }
+
+        ctrl.displayInfo = function(ev) {
+             var useFullScreen = ($mdMedia('sm') || $mdMedia('xs'));
+            $mdDialog.show({
+              template: require("./info.html"),
+              parent: angular.element(document.body),
+              targetEvent: ev,
+              clickOutsideToClose:true,
+              fullscreen: useFullScreen
+            })
+
+         }
 
     // controller ends here
     };

@@ -89,18 +89,18 @@ module.exports = function(moduleAngular) {
             });
         }
 
-        /*// Formulaire de modification d'un patient
-        this.isOpen = false;
-        this.modifierPatient = function(ev){
-            var useFullScreen = ($mdMedia('sm') || $mdMedia('xs'));
-            $mdDialog.show({
-              template: require("../patients/formulaireNouveauPatient.html"),
-              parent: angular.element(document.body),
-              targetEvent: ev,
-              clickOutsideToClose:true,
-              fullscreen: useFullScreen
-            })
-          };*/
+        // Formulaire de modification d'un patient
+        // this.isOpen = false;
+        // this.modifierPatient = function(ev){
+        //     var useFullScreen = ($mdMedia('sm') || $mdMedia('xs'));
+        //     $mdDialog.show({
+        //       template: require("../patients/formulaireNouveauPatient.html"),
+        //       parent: angular.element(document.body),
+        //       targetEvent: ev,
+        //       clickOutsideToClose:true,
+        //       fullscreen: useFullScreen
+        //     })
+        //   };
 
 
         // Affichage formulaire -----------------
@@ -125,6 +125,20 @@ module.exports = function(moduleAngular) {
                 ctrl.patientsRestants = true;
             }
             console.log(ctrl.patientsRestants);
+         }
+
+
+         // affichage des informations du cabinet
+         ctrl.displayInfo = function(ev) {
+             var useFullScreen = ($mdMedia('sm') || $mdMedia('xs'));
+            $mdDialog.show({
+              template: require("./info.html"),
+              parent: angular.element(document.body),
+              targetEvent: ev,
+              clickOutsideToClose:true,
+              fullscreen: useFullScreen
+            })
+
          }
 
 

@@ -42,6 +42,18 @@ module.exports = function(moduleAngular) {
                 function(){
                     console.log("patient.js => test d'affectation");
                     ctrl.onValidation();
+                    ctrl.nouveauPatient = {
+                        "patientNumber": "",
+                        "patientName": "",
+                        "patientForname":"",
+                        "patientSex": "",
+                        "patientBirthday": "",
+                        "patientFloor": "",
+                        "patientStreet": "",
+                        "postalCode": "",
+                        "patientCity": ""
+                        };
+                    ctrl.AjouterPatient.$setUntouched();
                 });
             if(ctrl.check == true && ctrl.affecterInfirmier.infirmier!=="") {
                 ctrl.affecterInfirmier.patient = ctrl.nouveauPatient.patientNumber;
@@ -50,6 +62,17 @@ module.exports = function(moduleAngular) {
                     console.log("patient.js => test d'affectation");
                     console.log(ctrl.onValidation);
                     ctrl.onValidation();
+                    ctrl.nouveauPatient = {
+                        "patientNumber": "",
+                        "patientName": "",
+                        "patientForname":"",
+                        "patientSex": "",
+                        "patientBirthday": "",
+                        "patientFloor": "",
+                        "patientStreet": "",
+                        "postalCode": "",
+                        "patientCity": ""
+                        };
                 });
             }
 

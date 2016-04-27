@@ -101,7 +101,7 @@
                 jour et injection intraveineuse directe isolee d'anthalgiques les 
                 autres jours.
                 -->
-			<visite date="2014-12-08">
+			<visite date="2014-12-08" intervenant="003">
 				<acte id="101"/>
 				<acte id="104"/>
 			</visite>
@@ -164,21 +164,7 @@
 				<codePostal/>
 			</adresse>
 		</patient>
-		<patient>
-			<nom>Captain</nom>
-			<prenom>MORRIS</prenom>
-			<numero>123456789012337</numero>
-			<sexe/>
-			<naissance/>
-			<visite date="2014-12-08" intervenant="001"/>
-			<adresse>
-				<etage/>
-				<numero/>
-				<rue/>
-				<ville/>
-				<codePostal/>
-			</adresse>
-		</patient>
+		
 		<patient>
 			<nom>CAPTAIN</nom>
 			<prenom>Flame</prenom>
@@ -223,5 +209,5 @@
 				<codePostal/>
 			</adresse>
 		</patient>
-	<patient><nom>CAPTAIN</nom><prenom>America</prenom><numero>123456789012098</numero><sexe></sexe><naissance></naissance><visite date="2014-12-08"/><adresse><etage></etage><numero></numero><rue></rue><ville></ville><codePostal></codePostal></adresse></patient></patients>
+	<patient><nom>CAPTAIN</nom><prenom>America</prenom><numero>123456789012098</numero><sexe/><naissance/><visite date="2014-12-08" intervenant="002"/><adresse><etage/><numero/><rue/><ville/><codePostal/></adresse></patient><patient><nom>Lechemia</nom><prenom>Cesar</prenom><numero>010101010101001</numero><sexe>M</sexe><naissance>21/10/1987</naissance><visite date="2014-12-08" intervenant="003"/><adresse><etage/><numero/><rue>3 chemin de l'agnelas</rue><ville>La Tronche</ville><codePostal/></adresse></patient><patient><nom>ROMEO</nom><prenom>Oh, Roméo</prenom><numero>123456789019873</numero><sexe></sexe><naissance></naissance><visite date="2014-12-08"/><adresse><etage></etage><numero></numero><rue></rue><ville></ville><codePostal></codePostal></adresse></patient><patient><nom>OUI</nom><prenom>Juliette ?</prenom><numero>123456789012467</numero><sexe></sexe><naissance></naissance><visite date="2014-12-08"/><adresse><etage></etage><numero></numero><rue></rue><ville></ville><codePostal></codePostal></adresse></patient><patient><nom>BRAMAR</nom><prenom>Lucien</prenom><numero>123456789012397</numero><sexe></sexe><naissance></naissance><visite date="2014-12-08"/><adresse><etage></etage><numero></numero><rue></rue><ville></ville><codePostal></codePostal></adresse></patient><patient><nom>BONNISSEUR</nom><prenom>DeLaBatte</prenom><numero>123456789012305</numero><sexe></sexe><naissance></naissance><visite date="2014-12-08"/><adresse><etage></etage><numero></numero><rue></rue><ville></ville><codePostal></codePostal></adresse></patient></patients>
 </cabinet>

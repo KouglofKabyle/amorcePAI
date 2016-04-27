@@ -1,3 +1,17 @@
+<!-- TEMPLATE MAP PATIENTS -->
+<md-toolbar class="md-background">
+  <div class="md-toolbar-tools">
+    <md-button aria-label="Go Back" onclick="history.go(-1);">
+       <md-icon md-svg-icon="../../images/home.svg"></md-icon>
+    </md-button>
+    <h2>
+      <span>Interface Infirmier</span>
+    </h2>
+    <span flex></span>
+  </div>
+</md-toolbar>
+
+<!-- VISUALISATION DES PATIENTS -->
 <md-content class="md-whiteframe-4dp">
 		<md-input-container layout=" center">
 	        <label for="idInfirmier">Veuillez entrer votre identifiant</label>
@@ -5,7 +19,7 @@
 	  	</md-input-container>
 </md-content>
 <br/>
-<div layout="row">
+<div layout="row" layout-margin>
 	<md-button	ng-repeat =	"patient in $ctrl.data |
 							filter : {infirmier:$ctrl.infirmierSelectionne}"
 				class="md-raised md-secondary",
@@ -17,8 +31,7 @@
 	</md-button>
 </div>
 
+<!-- CARTE -->
 <div id="map-wrapper">
-
 	<div id="map"></div>
-
 </div>

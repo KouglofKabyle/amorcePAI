@@ -1,20 +1,29 @@
-<!-- <md-toolbar class="titre">{{ $ctrl.titre }}</md-toolbar> -->
+<!-- TEMPLATE HEADER-->
+ <md-toolbar class="md-background">
+    <div class="md-toolbar-tools">
+      <md-button aria-label="Go Back" onclick="history.go(-1);">
+         <md-icon md-svg-icon="../../images/home.svg"></md-icon>
+      </md-button>
+      <h2>
+         <span>Interface Secretaire</span>
+      </h2>
+      <span flex></span>
+      <md-button md-no-ink aria-label="Learn More" ng-click="$ctrl.displayInfo($event)">
+      </md-button>
+     </div>
+</md-toolbar>
 
-<!-- Afficher la liste des patients pour chaque Infirmier -->
+<!-- TEMPLATE BODY -->
 <div class="md-whiteframe-2dp" ng-cloak>
-
-
   <md-toolbar >
     <div class="md-toolbar-tools">
-
       <h2>
         <span>Gestion des infimiers </span>
       </h2>
       <span flex></span>
-
     </div>
   </md-toolbar>
-
+<!-- Afficher la liste des patients pour chaque Infirmier -->
   <md-content class="md-padding">
       <md-tabs md-selected="selectedIndex" md-dynamic-height md-border-bottom md-autoselect>
         	<md-tab ng-repeat="inf in $ctrl.data.objectInfirmiers | orderBy:inf.nom"
@@ -27,11 +36,12 @@
                         ng-drop-success="$ctrl.onDropPatient($data)">
             		<md-list  class="tableau-infirmier"
                           ng-repeat="patientX in inf.patients"
-                          layout="row">
+                          layout="row"
+                          layout-padding>
                       <!-- <md-content layout="row"
                                   ng-drag="true"
                                   ng-drag-data="obj"> -->
-                    <md-content layout="row">
+                    <div layout="row">
                       <div layout="column">
                         <!-- affiche un patient -->
               					<patient data="patientX" layout-padding></patient>
@@ -45,8 +55,7 @@
                           Supprimer</md-button>
 
                         </div>
-                      <md-divider ng-if="!$last"></md-divider>
-                    </md-content>
+                    </div>
             		</md-list-item>
   	        </md-content>
         	</md-tab>
@@ -58,49 +67,46 @@
 <!-- Ajouter un patient au tableau -->
   <md-toolbar >
     <div class="md-toolbar-tools">
-      <h2><span>Ajouter un patient </span></h2>
+      <h2><span>Ajouter un patient</span></h2>
       <span flex></span>
       <md-button ng-click= "$ctrl.showFormulaire()" class="md-icon-button" aria-label="More">
         	<md-icon md-svg-icon="../../images/svg/design/ic_expand_more_48px.svg"></md-icon>
       </md-button>
     </div>
   </md-toolbar>
-  <md-content class="md-padding" layout-align="center">
+  <md-content layout-margin layout-align="center">
     <formulaire-new-patient data="$ctrl.data"
                             ng-show="$ctrl.formulaire == true"
                             on-validation="$ctrl.updateInfirmiers()">
     </formulaire-new-patient>
   </md-content>
-  </br>
-
 
 <!-- Liste des patients restants de patient restant -->
 	<md-toolbar >
-      <div class="md-toolbar-tools">
-        <h2><span>Patients non affectés</span></h2>
-        <span flex></span>
-        <md-button ng-click= "$ctrl.showPatientsRestants()" class="md-icon-button" aria-label="More">
-          <md-icon md-svg-icon="../../images/svg/design/ic_expand_more_48px.svg"></md-icon>
-        </md-button>
-      </div>
-    </md-toolbar>
-
-    <div class="superman" ng-show="$ctrl.patientsRestants == true" layout="row">
-      <div  class="md-whiteframe-2dp"
+    <div class="md-toolbar-tools">
+      <h2><span>Patients non affectés</span></h2>
+      <span flex></span>
+      <md-button ng-click= "$ctrl.showPatientsRestants()" class="md-icon-button" aria-label="More">
+        <md-icon md-svg-icon="../../images/svg/design/ic_expand_more_48px.svg"></md-icon>
+      </md-button>
+    </div>
+  </md-toolbar>
+    <div class="superman" ng-show="$ctrl.patientsRestants == true" layout="row" layout-margin>
+      <md-list class="md-whiteframe-4dp"
             ng-repeat="patientY in $ctrl.data.objectPatients"
             ng-if="patientY.infirmier == null"
             ng-drag="true"
             ng-drag-data="patientY.id"
             ng-drag-handle="true">
-        <md-content class="md-padding">
+        <div class="superman">
           <patient data="patientY"></patient>
-        </md-content>
-      </div>
+        </fiv>
+      </md-list>
     </div>
 
 <!-- fin du div md-whiteframe -->
 </div>
-
+</div>
 
 
 

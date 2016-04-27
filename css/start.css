@@ -1,16 +1,86 @@
-.body{
+html{
+    min-height:100%;/* make sure it is at least as tall as the viewport */
+    position:relative;
+}
+
+body{
 	margin-left: auto;
 	margin-right: auto;
-	background-color: indigo;
+	height:100%;
+	background-color: lightgrey;
 }
 
-.button{
-	height: 90%;
-	width: 90%;
-	background-color: transparent;
+
+#wrapper {
+    padding: 5px;
+    margin: auto;
+    width: 984px;
+    font-family: Arial, Verdana, sans-serif;
+    /* background-color: white; */
 }
 
-.button:hover {
-	background-color: white;
-	font-style: 18px #333;
+
+h1 {
+    text-align: center;
+    vertical-align:middle;
+    color: #D2BDC7;
+    background-color: #3F51B5;
+    padding-top: 0.5em ;
+    padding-bottom: 0.5em;
+    padding-left: 1em;
+    padding-right: 1em;
+    letter-spacing: 0.005em;
+}
+
+/* Formulaire  */
+
+.titre {
+
+}
+
+#left {
+	float: left;
+	width: 50%;
+	height: 100%;
+	position:absolute;
+    top:0;
+    bottom:0;
+    left:0;
+    right:50%;
+    overflow:hidden;
+}
+
+#right {
+	float: right;
+	width: 50%;
+	height: 100%;
+	position:absolute;
+    top:0;
+    bottom:0;
+    left:50%;
+    right:0;
+    overflow:hidden;
+}
+
+.all, #secretaire {
+	background-color: lightgrey;
+	border: 0px;
+	display: block;
+	width: 100%;
+	height: 100%;
+	text-align: center;
+	margin-left: auto;
+	margin-right: auto;
+	font: bold 24px Roboto;
+	-o-transition:color .1s ease-out, background 1s ease-in;
+  -ms-transition:color .1s ease-out, background 1s ease-in;
+  -moz-transition:color .1s ease-out, background 1s ease-in;
+  -webkit-transition:color .1s ease-out, background 1s ease-in;
+  /* ...and now override with proper CSS property */
+  transition:color .1s ease-out, background 0.5s ease-in;
+}
+
+.all:hover{
+	background-color: #3399ff;
+	color: white;
 }
